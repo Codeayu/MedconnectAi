@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from "react"
-import Card from "./ui/Card"
-import Button from "./ui/Button"
+import McCard from "./ui-next/McCard"
+import McButton from "./ui-next/McButton"
 import Badge from "./ui/Badge"
 import { api } from "../api"
 import { getUserName } from "../auth"
+import { MessageCircle, AlertCircle, Send, Paperclip, Image, FileText, Mic, X, Info, ChevronDown } from './ui/icons/Icon'
 
-export default function Chatbot() {
+export default function Chatbot({ onBack }) {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -79,10 +80,10 @@ export default function Chatbot() {
   }
 
   const getFileIcon = (type) => {
-    if (type.startsWith("image/")) return "🖼️"
-    if (type === "application/pdf") return "📄"
-    if (type.startsWith("audio/")) return "🎵"
-    return "📎"
+    if (type.startsWith("image/")) return <Image size={18} />
+    if (type === "application/pdf") return <FileText size={18} />
+    if (type.startsWith("audio/")) return <Mic size={18} />
+    return <Paperclip size={18} />
   }
 
   const getFileTypeBadge = (type) => {
@@ -183,7 +184,7 @@ export default function Chatbot() {
     }}>
       {/* Header */}
       <section style={{
-        background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+        background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
         color: 'white',
         padding: '1.5rem 0',
         borderBottom: '1px solid var(--border)'
@@ -197,6 +198,11 @@ export default function Chatbot() {
             gap: '1rem'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              {onBack && (
+                <McButton variant="ghost" size="sm" onClick={onBack} style={{ color: 'white', padding: '8px 12px' }}>
+                  ← Back
+                </McButton>
+              )}
               <div style={{
                 width: '50px',
                 height: '50px',
@@ -207,7 +213,7 @@ export default function Chatbot() {
                 justifyContent: 'center',
                 fontSize: '1.75rem'
               }}>
-                💬
+                <MessageCircle size={28} color="white" />
               </div>
               <div>
                 <h1 style={{ 
@@ -236,18 +242,19 @@ export default function Chatbot() {
                 </p>
               </div>
             </div>
-            <Button 
+            <McButton 
               variant="outline"
               onClick={clearChat}
               style={{
                 background: 'rgba(255,255,255,0.15)',
                 color: 'white',
                 border: '1px solid rgba(255,255,255,0.3)',
-                fontSize: '0.9rem'
+                fontSize: '0.9rem',
+                display: 'flex', alignItems: 'center', gap: '6px'
               }}
             >
-              🗑️ Clear Chat
-            </Button>
+              <X size={16} /> Clear Chat
+            </McButton>
           </div>
         </div>
       </section>
@@ -263,7 +270,7 @@ export default function Chatbot() {
         margin: '0 auto'
       }}>
         {/* Messages Area */}
-        <Card style={{ 
+        <McCard style={{ 
           flex: 1,
           display: 'flex',
           flexDirection: 'column',
@@ -299,14 +306,14 @@ export default function Chatbot() {
                     borderRadius: '10px',
                     background: msg.type === 'error' 
                       ? 'linear-gradient(135deg, #D32F2F 0%, #F44336 100%)'
-                      : 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+                      : 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '1.1rem',
                     flexShrink: 0
                   }}>
-                    {msg.type === 'error' ? '⚠️' : '🤖'}
+                    {msg.type === 'error' ? <AlertCircle size={18} color="white" /> : <MessageCircle size={18} color="white" />}
                   </div>
                 )}
                 
@@ -421,13 +428,13 @@ export default function Chatbot() {
                   width: '36px',
                   height: '36px',
                   borderRadius: '10px',
-                  background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+                  background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '1.1rem'
                 }}>
-                  🤖
+                  <MessageCircle size={18} color="white" />
                 </div>
                 <div style={{
                   padding: '1rem 1.25rem',
@@ -454,7 +461,7 @@ export default function Chatbot() {
             
             <div ref={messagesEndRef} />
           </div>
-        </Card>
+        </McCard>
 
         {/* Quick Questions */}
         {messages.length <= 2 && (
@@ -503,7 +510,7 @@ export default function Chatbot() {
 
         {/* File Upload Area */}
         {selectedFile && (
-          <Card 
+          <McCard 
             className="fade-in"
             style={{ 
               marginBottom: '1rem',
@@ -551,18 +558,17 @@ export default function Chatbot() {
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1rem'
+                  justifyContent: 'center'
                 }}
               >
-                ✕
+                <X size={16} />
               </button>
             </div>
-          </Card>
+          </McCard>
         )}
 
         {/* Input Area */}
-        <Card 
+        <McCard 
           style={{ padding: '1rem', position: 'relative' }}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -582,7 +588,7 @@ export default function Chatbot() {
               zIndex: 10
             }}>
               <div style={{ textAlign: 'center' }}>
-                <span style={{ fontSize: '2rem' }}>📁</span>
+                <span style={{ fontSize: '2rem' }}><Paperclip size={32} color="var(--primary)" /></span>
                 <p style={{ margin: '0.5rem 0 0', color: 'var(--primary)' }}>
                   Drop your file here
                 </p>
@@ -626,7 +632,7 @@ export default function Chatbot() {
                 style={{ display: 'none' }}
               />
               
-              <Button
+              <McButton
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
@@ -639,9 +645,9 @@ export default function Chatbot() {
                 }}
               >
                 📎
-              </Button>
+              </McButton>
               
-              <Button
+              <McButton
                 variant="primary"
                 onClick={sendMessage}
                 disabled={isLoading || (!inputText.trim() && !selectedFile)}
@@ -654,7 +660,7 @@ export default function Chatbot() {
                 }}
               >
                 {isLoading ? '⏳' : '➤'}
-              </Button>
+              </McButton>
             </div>
           </div>
           
@@ -671,7 +677,7 @@ export default function Chatbot() {
               fontSize: '0.75rem',
               color: 'var(--text-muted)'
             }}>
-              📎 Supports: Images, PDFs, Audio files (max 10MB)
+              <Paperclip size={14} /> Supports: Images, PDFs, Audio files (max 10MB)
             </p>
             <p style={{ 
               margin: 0,
@@ -681,7 +687,7 @@ export default function Chatbot() {
               Press Enter to send
             </p>
           </div>
-        </Card>
+          </McCard>
 
         {/* Disclaimer */}
         <div style={{
@@ -695,9 +701,13 @@ export default function Chatbot() {
             margin: 0,
             fontSize: '0.8rem',
             color: 'var(--text-secondary)',
-            textAlign: 'center'
+            textAlign: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px'
           }}>
-            ⚠️ <strong>Medical Disclaimer:</strong> This AI assistant provides general health information only and is not a substitute for professional medical advice. Always consult a qualified healthcare provider for medical decisions.
+            <AlertCircle size={14} color="#F59E0B" /> <strong>Medical Disclaimer:</strong> This AI assistant provides general health information only and is not a substitute for professional medical advice. Always consult a qualified healthcare provider for medical decisions.
           </p>
         </div>
       </div>

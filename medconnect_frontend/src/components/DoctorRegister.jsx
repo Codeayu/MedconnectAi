@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import Card from './ui/Card'
-import Button from './ui/Button'
+import McCard from './ui-next/McCard'
+import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
 import { api } from '../api'
+import { UserDoctor, CheckCircle, AlertCircle, Stethoscope, Shield } from './ui/icons/Icon'
 
-export default function DoctorRegister({ onSuccess, onLogin }) {
+export default function DoctorRegister({ onSuccess, onLogin, onPatientRegister }) {
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -109,17 +110,19 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
         background: 'var(--gray-50)',
         padding: '2rem'
       }}>
-        <Card style={{ maxWidth: '500px', width: '100%', padding: '3rem', textAlign: 'center' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✅</div>
-          <h2 style={{ marginBottom: '1rem', color: 'var(--success)' }}>Registration Successful!</h2>
+        <McCard style={{ maxWidth: '500px', width: '100%', padding: '3rem', textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--mc-semantic-success-light, #E8F5E9)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+            <CheckCircle size={32} color="var(--mc-semantic-success, #00C853)" />
+          </div>
+          <h2 style={{ marginBottom: '1rem', color: 'var(--mc-semantic-success, #00C853)' }}>Registration Successful!</h2>
           <p style={{ marginBottom: '2rem', color: 'var(--text-secondary)' }}>
             Your registration has been submitted successfully. Our admin team will review and approve your profile. 
             You'll be able to login once your account is approved.
           </p>
-          <Button variant="primary" onClick={onLogin}>
+          <McButton variant="primary" onClick={onLogin}>
             Go to Login
-          </Button>
-        </Card>
+          </McButton>
+        </McCard>
       </div>
     )
   }
@@ -131,9 +134,9 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
       padding: '2rem 1rem'
     }}>
       <div className="container" style={{ maxWidth: '700px' }}>
-        <Card style={{ padding: '2.5rem' }}>
+        <McCard style={{ padding: '2.5rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <Badge variant="primary" icon="👨‍⚕️">Doctor Portal</Badge>
+            <Badge variant="primary" icon={<UserDoctor size={14} />}>Doctor Portal</Badge>
             <h1 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Doctor Registration</h1>
             <p style={{ color: 'var(--text-secondary)' }}>
               Join our platform as a healthcare professional
@@ -141,14 +144,18 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
           </div>
 
           {error && (
-            <div style={{
+              <div style={{
               background: '#FFEBEE',
               border: '1px solid #EF5350',
               borderRadius: '8px',
               padding: '1rem',
               marginBottom: '1.5rem',
-              color: '#C62828'
+              color: '#C62828',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
+              <AlertCircle size={18} />
               {error}
             </div>
           )}
@@ -156,7 +163,7 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
           <form onSubmit={handleSubmit}>
             {/* Account Information */}
             <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>📧 Account Information</h3>
+              <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Shield size={18} color="var(--mc-primary-500)" /> Account Information</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
@@ -239,7 +246,7 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
 
             {/* Professional Information */}
             <div style={{ marginBottom: '2rem' }}>
-              <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>🩺 Professional Information</h3>
+              <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Stethoscope size={18} color="var(--mc-primary-500)" /> Professional Information</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div style={{ gridColumn: 'span 2' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
@@ -381,14 +388,15 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
             </div>
 
             {/* Submit */}
-            <Button 
+            <McButton 
               type="submit" 
               variant="primary" 
               disabled={loading}
               style={{ width: '100%' }}
+              icon={Stethoscope}
             >
-              {loading ? 'Registering...' : '🩺 Register as Doctor'}
-            </Button>
+              {loading ? 'Registering...' : 'Register as Doctor'}
+            </McButton>
           </form>
 
           <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
@@ -399,7 +407,7 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--primary)',
+                  color: 'var(--mc-primary-500)',
                   cursor: 'pointer',
                   fontWeight: '600'
                 }}
@@ -407,8 +415,25 @@ export default function DoctorRegister({ onSuccess, onLogin }) {
                 Login here
               </button>
             </p>
+            {onPatientRegister && (
+              <p style={{ color: 'var(--text-secondary)', marginTop: '0.75rem' }}>
+                Not a doctor?{' '}
+                <button 
+                  onClick={onPatientRegister}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--mc-primary-500)',
+                    cursor: 'pointer',
+                    fontWeight: '600'
+                  }}
+                >
+                  Register as Patient
+                </button>
+              </p>
+            )}
           </div>
-        </Card>
+        </McCard>
       </div>
     </div>
   )

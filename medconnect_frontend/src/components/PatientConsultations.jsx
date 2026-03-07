@@ -1,25 +1,10 @@
 import { useState, useEffect } from 'react'
-import Card from './ui/Card'
-import Button from './ui/Button'
+import McCard from './ui-next/McCard'
+import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
 import VideoCall from './VideoCall'
 import { api } from '../api'
-
-const EMOJI = {
-  calendar: '📅',
-  clock: '🕐',
-  doctor: '👨‍⚕️',
-  video: '📹',
-  chat: '💬',
-  phone: '📞',
-  location: '📍',
-  pending: '⏳',
-  confirmed: '✅',
-  ongoing: '🔄',
-  completed: '🎉',
-  cancelled: '❌',
-  money: '💰'
-}
+import { Calendar, Clock, UserDoctor, Video, MessageCircle, Phone, CheckCircle, BarChart, FileText, X, AlertCircle, Stethoscope } from './ui/icons/Icon'
 
 const STATUS_COLORS = {
   PENDING: { bg: '#FFF3E0', color: '#E65100', label: 'Pending' },
@@ -30,11 +15,11 @@ const STATUS_COLORS = {
   REJECTED: { bg: '#FFEBEE', color: '#C62828', label: 'Rejected' }
 }
 
-const TYPE_ICONS = {
-  VIDEO: '📹',
-  AUDIO: '📞',
-  CHAT: '💬',
-  IN_PERSON: '🏥'
+const TYPE_MAP = {
+  VIDEO: Video,
+  AUDIO: Phone,
+  CHAT: MessageCircle,
+  IN_PERSON: Stethoscope
 }
 
 export default function PatientConsultations({ onBack }) {
@@ -104,33 +89,33 @@ export default function PatientConsultations({ onBack }) {
   }
 
   const tabs = [
-    { id: 'all', label: 'All', icon: '📋' },
-    { id: 'pending', label: 'Pending', icon: '⏳' },
-    { id: 'confirmed', label: 'Confirmed', icon: '✅' },
-    { id: 'ongoing', label: 'Ongoing', icon: '🔄' },
-    { id: 'completed', label: 'Completed', icon: '🎉' }
+    { id: 'all', label: 'All', IconComp: FileText },
+    { id: 'pending', label: 'Pending', IconComp: Clock },
+    { id: 'confirmed', label: 'Confirmed', IconComp: CheckCircle },
+    { id: 'ongoing', label: 'Ongoing', IconComp: BarChart },
+    { id: 'completed', label: 'Completed', IconComp: CheckCircle }
   ]
 
   return (
     <div style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header */}
       <section style={{
-        background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+        background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
         color: 'white',
         padding: '2rem 0'
       }}>
         <div className="container">
           {onBack && (
-            <Button 
+            <McButton 
               variant="outline" 
               onClick={onBack}
               style={{ marginBottom: '1rem', color: 'white', borderColor: 'rgba(255,255,255,0.5)' }}
             >
               ← Back to Dashboard
-            </Button>
+            </McButton>
           )}
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>
-            {EMOJI.calendar} My Consultations
+          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Calendar size={24} /> My Consultations
           </h1>
           <p style={{ opacity: 0.9, color: 'white' }}>
             View and manage your doctor appointments
@@ -155,7 +140,7 @@ export default function PatientConsultations({ onBack }) {
                 padding: '0.75rem 1.5rem',
                 borderRadius: '25px',
                 border: 'none',
-                background: activeTab === tab.id ? 'var(--primary)' : 'white',
+                background: activeTab === tab.id ? 'var(--mc-primary-500)' : 'white',
                 color: activeTab === tab.id ? 'white' : 'var(--text-primary)',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -163,7 +148,7 @@ export default function PatientConsultations({ onBack }) {
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}
             >
-              {tab.icon} {tab.label}
+              <tab.IconComp size={14} /> {tab.label}
             </button>
           ))}
         </div>
@@ -171,23 +156,27 @@ export default function PatientConsultations({ onBack }) {
         {/* Loading */}
         {loading && (
           <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏳</div>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--mc-neutral-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <Clock size={24} color="var(--mc-neutral-400)" />
+            </div>
             <p>Loading consultations...</p>
           </div>
         )}
 
         {/* Error */}
         {error && (
-          <Card style={{ padding: '2rem', textAlign: 'center', background: '#FFEBEE' }}>
+          <McCard style={{ padding: '2rem', textAlign: 'center', background: '#FFEBEE' }}>
             <p style={{ color: '#C62828' }}>{error}</p>
-            <Button onClick={loadConsultations}>Retry</Button>
-          </Card>
+            <McButton onClick={loadConsultations}>Retry</McButton>
+          </McCard>
         )}
 
         {/* No consultations */}
         {!loading && !error && consultations.length === 0 && (
-          <Card style={{ padding: '3rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📋</div>
+          <McCard style={{ padding: '3rem', textAlign: 'center' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--mc-neutral-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <FileText size={28} color="var(--mc-neutral-400)" />
+            </div>
             <h3>No consultations found</h3>
             <p style={{ color: 'var(--text-secondary)' }}>
               {activeTab === 'all' 
@@ -196,11 +185,11 @@ export default function PatientConsultations({ onBack }) {
               }
             </p>
             {onBack && (
-              <Button variant="primary" onClick={onBack} style={{ marginTop: '1rem' }}>
+              <McButton variant="primary" onClick={onBack} style={{ marginTop: '1rem' }}>
                 Book a Consultation
-              </Button>
+              </McButton>
             )}
-          </Card>
+          </McCard>
         )}
 
         {/* Consultations List */}
@@ -210,11 +199,11 @@ export default function PatientConsultations({ onBack }) {
               const statusInfo = STATUS_COLORS[consultation.status] || STATUS_COLORS.PENDING
               
               return (
-                <Card key={consultation.id} style={{ padding: '1.5rem' }}>
+                <McCard key={consultation.id} style={{ padding: '1.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                     <div>
-                      <h3 style={{ marginBottom: '0.25rem' }}>
-                        {EMOJI.doctor} {consultation.doctor_name || 'Unassigned'}
+                      <h3 style={{ marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <UserDoctor size={18} /> {consultation.doctor_name || 'Unassigned'}
                       </h3>
                       <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                         {consultation.doctor_specialization || 'General'}
@@ -237,25 +226,25 @@ export default function PatientConsultations({ onBack }) {
                     <div>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Date</span>
                       <p style={{ fontWeight: 600, margin: '0.25rem 0 0' }}>
-                        {EMOJI.calendar} {formatDate(consultation.scheduled_date)}
+                        <Calendar size={14} /> {formatDate(consultation.scheduled_date)}
                       </p>
                     </div>
                     <div>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Time</span>
                       <p style={{ fontWeight: 600, margin: '0.25rem 0 0' }}>
-                        {EMOJI.clock} {consultation.scheduled_time || 'TBD'}
+                        <Clock size={14} /> {consultation.scheduled_time || 'TBD'}
                       </p>
                     </div>
                     <div>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Type</span>
-                      <p style={{ fontWeight: 600, margin: '0.25rem 0 0' }}>
-                        {TYPE_ICONS[consultation.consultation_type] || '📋'} {consultation.consultation_type_display || consultation.consultation_type}
+                      <p style={{ fontWeight: 600, margin: '0.25rem 0 0', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        {(() => { const IC = TYPE_MAP[consultation.consultation_type] || FileText; return <IC size={14} />; })()} {consultation.consultation_type_display || consultation.consultation_type}
                       </p>
                     </div>
                     <div>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Fee</span>
                       <p style={{ fontWeight: 600, margin: '0.25rem 0 0' }}>
-                        {EMOJI.money} ₹{consultation.fee || 0}
+                        ₹{consultation.fee || 0}
                       </p>
                     </div>
                   </div>
@@ -278,7 +267,7 @@ export default function PatientConsultations({ onBack }) {
                       borderRadius: '8px',
                       marginBottom: '1rem'
                     }}>
-                      <h4 style={{ marginBottom: '0.5rem', color: '#2E7D32' }}>📋 Prescription</h4>
+                      <h4 style={{ marginBottom: '0.5rem', color: '#2E7D32', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FileText size={16} /> Prescription</h4>
                       {consultation.diagnosis && (
                         <p><strong>Diagnosis:</strong> {consultation.diagnosis}</p>
                       )}
@@ -295,36 +284,37 @@ export default function PatientConsultations({ onBack }) {
                   <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                     {/* Join Video Call for ONGOING video consultations */}
                     {consultation.status === 'ONGOING' && consultation.consultation_type === 'VIDEO' && (
-                      <Button 
-                        variant="gradient" 
+                      <McButton 
+                        variant="primary" 
                         size="sm"
                         onClick={() => handleJoinVideoCall(consultation)}
+                        icon={Video}
                       >
-                        {EMOJI.video} Join Video Call
-                      </Button>
+                        Join Video Call
+                      </McButton>
                     )}
 
                     {/* Cancel for pending/confirmed */}
                     {['PENDING', 'CONFIRMED'].includes(consultation.status) && (
-                      <Button 
-                        variant="outline" 
+                      <McButton 
+                        variant="danger" 
                         size="sm"
                         onClick={() => handleCancel(consultation.id)}
-                        style={{ borderColor: '#EF5350', color: '#EF5350' }}
+                        icon={X}
                       >
-                        {EMOJI.cancelled} Cancel
-                      </Button>
+                        Cancel
+                      </McButton>
                     )}
 
-                    <Button 
+                    <McButton 
                       variant="outline" 
                       size="sm"
                       onClick={() => setSelectedConsultation(consultation)}
                     >
                       View Details
-                    </Button>
+                    </McButton>
                   </div>
-                </Card>
+                </McCard>
               )
             })}
           </div>
@@ -356,7 +346,7 @@ export default function PatientConsultations({ onBack }) {
           }}
           onClick={() => setSelectedConsultation(null)}
         >
-          <Card 
+          <McCard 
             style={{ 
               maxWidth: '600px', 
               width: '100%', 
@@ -373,11 +363,12 @@ export default function PatientConsultations({ onBack }) {
                 style={{ 
                   background: 'none', 
                   border: 'none', 
-                  fontSize: '1.5rem', 
-                  cursor: 'pointer' 
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
-                ×
+                <X size={22} />
               </button>
             </div>
 
@@ -423,7 +414,7 @@ export default function PatientConsultations({ onBack }) {
 
               {selectedConsultation.ai_prediction && (
                 <div style={{ background: '#E3F2FD', padding: '1rem', borderRadius: '8px' }}>
-                  <label style={{ color: '#1565C0', fontSize: '0.85rem', fontWeight: 600 }}>🤖 AI Prediction</label>
+                  <label style={{ color: '#1565C0', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}><BarChart size={14} /> AI Prediction</label>
                   <p>{selectedConsultation.ai_prediction}</p>
                 </div>
               )}
@@ -437,7 +428,7 @@ export default function PatientConsultations({ onBack }) {
 
               {selectedConsultation.prescription && (
                 <div style={{ background: '#E8F5E9', padding: '1rem', borderRadius: '8px' }}>
-                  <label style={{ color: '#2E7D32', fontSize: '0.85rem', fontWeight: 600 }}>📋 Prescription</label>
+                  <label style={{ color: '#2E7D32', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.25rem' }}><FileText size={14} /> Prescription</label>
                   <p style={{ whiteSpace: 'pre-wrap' }}>{selectedConsultation.prescription}</p>
                 </div>
               )}
@@ -452,21 +443,22 @@ export default function PatientConsultations({ onBack }) {
 
             <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
               {selectedConsultation.status === 'ONGOING' && selectedConsultation.consultation_type === 'VIDEO' && (
-                <Button 
-                  variant="gradient"
+                <McButton 
+                  variant="primary"
                   onClick={() => {
                     setSelectedConsultation(null)
                     handleJoinVideoCall(selectedConsultation)
                   }}
+                  icon={Video}
                 >
-                  {EMOJI.video} Join Video Call
-                </Button>
+                  Join Video Call
+                </McButton>
               )}
-              <Button variant="outline" onClick={() => setSelectedConsultation(null)}>
+              <McButton variant="outline" onClick={() => setSelectedConsultation(null)}>
                 Close
-              </Button>
+              </McButton>
             </div>
-          </Card>
+          </McCard>
         </div>
       )}
     </div>

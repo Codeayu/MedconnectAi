@@ -1,5 +1,5 @@
-import Button from './components/ui/Button'
-import Card from './components/ui/Card'
+import McButton from './components/ui-next/McButton'
+import McCard from './components/ui-next/McCard'
 import Badge from './components/ui/Badge'
 import Input from './components/ui/Input'
 
@@ -20,24 +20,24 @@ export default function ComponentShowcase() {
         
         <h3 className="mb-2">Variants</h3>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
-          <Button variant="primary">Primary Button</Button>
-          <Button variant="secondary">Secondary Button</Button>
-          <Button variant="outline">Outline Button</Button>
-          <Button variant="success">Success Button</Button>
+          <McButton variant="primary">Primary Button</McButton>
+          <McButton variant="secondary">Secondary Button</McButton>
+          <McButton variant="outline">Outline Button</McButton>
+          <McButton variant="success">Success Button</McButton>
         </div>
 
         <h3 className="mb-2">Sizes</h3>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
-          <Button size="sm">Small</Button>
-          <Button size="md">Medium</Button>
-          <Button size="lg">Large</Button>
+          <McButton size="sm">Small</McButton>
+          <McButton size="md">Medium</McButton>
+          <McButton size="lg">Large</McButton>
         </div>
 
         <h3 className="mb-2">States</h3>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <Button>Default</Button>
-          <Button disabled>Disabled</Button>
-          <Button icon="🚀">With Icon</Button>
+          <Button>Default</McButton>
+          <McButton disabled>Disabled</McButton>
+          <McButton icon="🚀">With Icon</McButton>
         </div>
       </section>
 
@@ -45,20 +45,20 @@ export default function ComponentShowcase() {
       <section className="section">
         <h2 className="mb-3">Cards</h2>
         <div className="grid grid-3">
-          <Card>
+          <McCard>
             <h3>Standard Card</h3>
             <p>Basic card with default styling</p>
-          </Card>
+          </McCard>
           
-          <Card hover>
+          <McCard hover>
             <h3>Hover Card</h3>
             <p>Card with hover effect (lift + shadow)</p>
-          </Card>
+          </McCard>
           
-          <Card style={{ border: '2px solid var(--primary)' }}>
+          <McCard style={{ border: '2px solid var(--primary)' }}>
             <h3>Custom Border</h3>
             <p>Card with custom styling</p>
-          </Card>
+          </McCard>
         </div>
       </section>
 
@@ -112,7 +112,7 @@ export default function ComponentShowcase() {
             { icon: '👨‍⚕️', title: 'Doctor Consultation', desc: 'Talk to specialists', color: '#00BFA5' },
             { icon: '🧪', title: 'Lab Tests', desc: 'Book diagnostic tests', color: '#2196F3' }
           ].map((service, i) => (
-            <Card key={i} hover style={{ textAlign: 'center', border: `2px solid ${service.color}15` }}>
+            <McCard key={i} hover style={{ textAlign: 'center', border: `2px solid ${service.color}15` }}>
               <div style={{
                 width: '70px',
                 height: '70px',
@@ -128,10 +128,10 @@ export default function ComponentShowcase() {
               </div>
               <h3 style={{ marginBottom: '0.5rem' }}>{service.title}</h3>
               <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>{service.desc}</p>
-              <Button variant="outline" size="sm" style={{ width: '100%' }}>
+              <McButton variant="outline" size="sm" style={{ width: '100%' }}>
                 Access Now
-              </Button>
-            </Card>
+              </McButton>
+            </McCard>
           ))}
         </div>
       </section>
@@ -144,7 +144,7 @@ export default function ComponentShowcase() {
             { name: 'Dr. Sarah Johnson', specialty: 'Cardiologist', rating: '4.9', fee: '800' },
             { name: 'Dr. Michael Chen', specialty: 'Neurologist', rating: '4.8', fee: '1000' }
           ].map((doc, i) => (
-            <Card key={i} style={{ padding: '1.75rem' }}>
+            <McCard key={i} style={{ padding: '1.75rem' }}>
               <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                 <div style={{
                   width: '80px',
@@ -172,11 +172,11 @@ export default function ComponentShowcase() {
                   </div>
                 </div>
                 
-                <Button variant="primary" size="sm">
+                <McButton variant="primary" size="sm">
                   Book Now
-                </Button>
+                </McButton>
               </div>
-            </Card>
+            </McCard>
           ))}
         </div>
       </section>
@@ -195,7 +195,7 @@ export default function ComponentShowcase() {
             { name: 'Gray 600', color: '#475569' },
             { name: 'Gray 300', color: '#CBD5E1' }
           ].map((item, i) => (
-            <Card key={i} style={{ textAlign: 'center', padding: '1rem' }}>
+            <McCard key={i} style={{ textAlign: 'center', padding: '1rem' }}>
               <div style={{
                 width: '100%',
                 height: '80px',
@@ -209,7 +209,7 @@ export default function ComponentShowcase() {
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
                 {item.color}
               </div>
-            </Card>
+            </McCard>
           ))}
         </div>
       </section>
@@ -217,14 +217,14 @@ export default function ComponentShowcase() {
       {/* Typography */}
       <section className="section">
         <h2 className="mb-3">Typography</h2>
-        <Card>
+        <McCard>
           <h1>Heading 1 - 2.5rem (40px)</h1>
           <h2>Heading 2 - 2rem (32px)</h2>
           <h3>Heading 3 - 1.5rem (24px)</h3>
           <h4>Heading 4 - 1.25rem (20px)</h4>
           <p style={{ fontSize: '1rem' }}>Body Text - 1rem (16px)</p>
           <p style={{ fontSize: '0.875rem' }}>Small Text - 0.875rem (14px)</p>
-        </Card>
+        </McCard>
       </section>
 
       {/* Grid System */}
@@ -233,23 +233,23 @@ export default function ComponentShowcase() {
         
         <h3 className="mb-2">2 Columns</h3>
         <div className="grid grid-2 mb-3">
-          <Card><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Column 1</div></Card>
-          <Card><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Column 2</div></Card>
+          <McCard><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Column 1</div></McCard>
+          <McCard><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Column 2</div></McCard>
         </div>
 
         <h3 className="mb-2">3 Columns</h3>
         <div className="grid grid-3 mb-3">
-          <Card><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Col 1</div></Card>
-          <Card><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Col 2</div></Card>
-          <Card><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Col 3</div></Card>
+          <McCard><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Col 1</div></McCard>
+          <McCard><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Col 2</div></McCard>
+          <McCard><div style={{ padding: '2rem', textAlign: 'center', background: 'var(--gray-100)' }}>Col 3</div></McCard>
         </div>
 
         <h3 className="mb-2">4 Columns</h3>
         <div className="grid grid-4">
-          <Card><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>1</div></Card>
-          <Card><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>2</div></Card>
-          <Card><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>3</div></Card>
-          <Card><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>4</div></Card>
+          <McCard><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>1</div></McCard>
+          <McCard><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>2</div></McCard>
+          <McCard><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>3</div></McCard>
+          <McCard><div style={{ padding: '1.5rem', textAlign: 'center', background: 'var(--gray-100)' }}>4</div></McCard>
         </div>
       </section>
     </div>

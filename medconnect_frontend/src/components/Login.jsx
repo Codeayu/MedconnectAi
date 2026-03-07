@@ -1,18 +1,9 @@
 import { useState } from "react"
-import Button from './ui/Button'
-import Input from './ui/Input'
-import Card from './ui/Card'
+import McButton from './ui-next/McButton'
+import McInput from './ui-next/McInput'
+import McCard from './ui-next/McCard'
 import Badge from './ui/Badge'
-
-const EMOJI = {
-  hospital: String.fromCodePoint(0x1F3E5),
-  lock: String.fromCodePoint(0x1F512),
-  email: String.fromCodePoint(0x2709, 0xFE0F),
-  key: String.fromCodePoint(0x1F511),
-  sparkles: String.fromCodePoint(0x2728),
-  wave: String.fromCodePoint(0x1F44B),
-  rocket: String.fromCodePoint(0x1F680)
-}
+import { Stethoscope, Shield, Sparkles, AlertCircle, ArrowRight, UserDoctor } from './ui/icons/Icon'
 
 export default function Login({ onLogin, onRegister, onDoctorRegister }) {
   const [email, setEmail] = useState("")
@@ -71,68 +62,81 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
       {/* Left Side - Branding */}
       <div style={{
         flex: 1,
-        background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+        background: 'linear-gradient(135deg, #030712 0%, #111827 100%)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '3rem',
+        padding: '3.5rem',
         position: 'relative',
         overflow: 'hidden'
       }}>
         {/* Animated Background */}
         <div style={{
           position: 'absolute',
-          top: '20%',
-          left: '10%',
-          width: '300px',
-          height: '300px',
-          background: 'radial-gradient(circle, rgba(0, 102, 204, 0.3) 0%, transparent 70%)',
-          filter: 'blur(60px)',
+          top: '15%',
+          left: '5%',
+          width: '350px',
+          height: '350px',
+          background: 'radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%)',
+          filter: 'blur(80px)',
           animation: 'float 8s ease-in-out infinite'
         }} />
         <div style={{
           position: 'absolute',
-          bottom: '20%',
-          right: '10%',
-          width: '250px',
-          height: '250px',
-          background: 'radial-gradient(circle, rgba(0, 191, 165, 0.25) 0%, transparent 70%)',
-          filter: 'blur(50px)',
+          bottom: '15%',
+          right: '5%',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%)',
+          filter: 'blur(70px)',
           animation: 'float 10s ease-in-out infinite reverse'
         }} />
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          right: '30%',
+          width: '200px',
+          height: '200px',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          animation: 'float 6s ease-in-out infinite'
+        }} />
 
-        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '450px' }}>
+        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '480px' }}>
           <div style={{
-            width: '100px',
-            height: '100px',
-            margin: '0 auto 2rem',
-            background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
-            borderRadius: '28px',
+            width: '110px',
+            height: '110px',
+            margin: '0 auto 2.5rem',
+            background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
+            borderRadius: '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '3rem',
-            boxShadow: '0 20px 50px rgba(0, 102, 204, 0.4)'
+            fontSize: '3.5rem',
+            boxShadow: '0 25px 60px rgba(37, 99, 235, 0.4)',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            {EMOJI.hospital}
+            <Stethoscope size={52} color="white" style={{ position: 'relative', zIndex: 1 }} />
           </div>
           
           <h1 style={{
-            fontSize: '2.5rem',
+            fontSize: '2.75rem',
             fontWeight: 800,
             color: 'white',
-            marginBottom: '1rem',
-            fontFamily: 'Poppins, sans-serif'
+            marginBottom: '1.25rem',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            letterSpacing: '-0.02em'
           }}>
             MedConnect AI
           </h1>
           
           <p style={{
-            fontSize: '1.1rem',
-            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '1.15rem',
+            color: 'rgba(255, 255, 255, 0.65)',
             lineHeight: 1.8,
-            marginBottom: '2rem'
+            marginBottom: '2.5rem'
           }}>
             Your trusted AI-powered healthcare companion. Get instant symptom analysis, 
             connect with verified doctors, and take control of your health journey.
@@ -144,8 +148,18 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
             justifyContent: 'center',
             flexWrap: 'wrap'
           }}>
-            <Badge variant="glass" icon={EMOJI.sparkles}>AI Powered</Badge>
-            <Badge variant="glass" icon={EMOJI.lock}>Secure</Badge>
+            <Badge variant="glass" style={{
+              background: 'rgba(37, 99, 235, 0.15)',
+              border: '1px solid rgba(37, 99, 235, 0.3)',
+              padding: '10px 20px',
+              display: 'inline-flex', alignItems: 'center', gap: '8px'
+            }}><Sparkles size={14} color="#93C5FD" /> AI Powered</Badge>
+            <Badge variant="glass" style={{
+              background: 'rgba(124, 58, 237, 0.15)',
+              border: '1px solid rgba(124, 58, 237, 0.3)',
+              padding: '10px 20px',
+              display: 'inline-flex', alignItems: 'center', gap: '8px'
+            }}><Shield size={14} color="#C4B5FD" /> Secure</Badge>
           </div>
         </div>
       </div>
@@ -156,61 +170,65 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(180deg, #f8fafb 0%, white 100%)',
-        padding: '3rem'
+        background: 'linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%)',
+        padding: '3.5rem'
       }}>
-        <div style={{ width: '100%', maxWidth: '420px' }}>
-          <div style={{ marginBottom: '2.5rem' }}>
+        <div style={{ width: '100%', maxWidth: '440px' }}>
+          <div style={{ marginBottom: '2.75rem' }}>
             <h2 style={{ 
-              fontSize: '2rem',
-              fontWeight: 700,
-              marginBottom: '0.5rem',
-              fontFamily: 'Poppins, sans-serif',
-              color: 'var(--text-primary)'
+              fontSize: '2.25rem',
+              fontWeight: 800,
+              marginBottom: '0.75rem',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              color: '#111827',
+              letterSpacing: '-0.02em'
             }}>
-              Welcome back! {EMOJI.wave}
+              Welcome back!
             </h2>
             <p style={{ 
-              color: 'var(--text-secondary)',
-              fontSize: '1rem'
+              color: '#6B7280',
+              fontSize: '1.05rem'
             }}>
               Sign in to continue to your dashboard
             </p>
           </div>
 
-          <Card style={{ padding: '2rem' }}>
+          <McCard style={{ 
+            padding: '2.5rem',
+            borderRadius: '24px',
+            border: '1px solid rgba(0, 0, 0, 0.04)',
+            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.06)'
+          }}>
             {error && (
               <div style={{
-                padding: '1rem',
-                borderRadius: '12px',
-                marginBottom: '1.5rem',
+                padding: '1.25rem',
+                borderRadius: '14px',
+                marginBottom: '1.75rem',
                 background: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
                 color: '#DC2626',
-                fontSize: '0.9rem',
-                fontWeight: 500,
+                fontSize: '0.925rem',
+                fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                border: '1px solid rgba(220, 38, 38, 0.2)'
+                gap: '0.75rem',
+                border: '1px solid rgba(239, 68, 68, 0.15)'
               }}>
-                {error}
+                <AlertCircle size={18} color="#DC2626" /> {error}
               </div>
             )}
 
-            <Input
+            <McInput
               label="Email Address"
               type="email"
-              icon={EMOJI.email}
               placeholder="you@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
               onKeyPress={handleKeyPress}
             />
 
-            <Input
+            <McInput
               label="Password"
               type="password"
-              icon={EMOJI.key}
               placeholder="Enter your password"
               value={password}
               onChange={e => setPassword(e.target.value)}
@@ -236,7 +254,7 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
                   style={{ 
                     width: '18px', 
                     height: '18px',
-                    accentColor: '#0066CC',
+                    accentColor: '#2563EB',
                     cursor: 'pointer'
                   }} 
                 />
@@ -245,28 +263,32 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
               <a 
                 href="#" 
                 style={{
-                  color: '#0066CC',
+                  color: '#2563EB',
                   fontSize: '0.9rem',
-                  fontWeight: 500,
-                  textDecoration: 'none'
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  transition: 'color 0.2s'
                 }}
               >
                 Forgot password?
               </a>
             </div>
 
-            <Button
-              variant="gradient"
+            <McButton
+              variant="primary"
               onClick={login}
               loading={loading}
               style={{ 
                 width: '100%',
-                marginBottom: '1.5rem',
-                padding: '16px'
+                marginBottom: '1.75rem',
+                padding: '18px',
+                borderRadius: '14px',
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)'
               }}
             >
-              {EMOJI.rocket} Sign In
-            </Button>
+              <ArrowRight size={18} /> Sign In
+            </McButton>
 
             <div style={{
               display: 'flex',
@@ -279,42 +301,47 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
               <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
             </div>
 
-            <Button
+            <McButton
               variant="outline"
               onClick={onRegister}
               style={{ 
                 width: '100%',
-                padding: '14px'
+                padding: '16px',
+                borderRadius: '14px',
+                fontWeight: 600
               }}
             >
               Create New Account
-            </Button>
+            </McButton>
 
             {onDoctorRegister && (
-              <Button
+              <McButton
                 variant="secondary"
                 onClick={onDoctorRegister}
                 style={{ 
                   width: '100%',
-                  padding: '14px',
-                  marginTop: '0.75rem'
+                  padding: '16px',
+                  marginTop: '1rem',
+                  borderRadius: '14px',
+                  fontWeight: 600,
+                  display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center'
                 }}
               >
-                👨‍⚕️ Register as Doctor
-              </Button>
+                <UserDoctor size={18} /> Register as Doctor
+              </McButton>
             )}
-          </Card>
+          </McCard>
 
           <p style={{
             textAlign: 'center',
-            marginTop: '2rem',
-            fontSize: '0.85rem',
-            color: 'var(--text-muted)'
+            marginTop: '2.5rem',
+            fontSize: '0.9rem',
+            color: '#9CA3AF'
           }}>
             By signing in, you agree to our{' '}
-            <a href="#" style={{ color: '#0066CC' }}>Terms of Service</a>
+            <a href="#" style={{ color: '#2563EB', fontWeight: 500 }}>Terms of Service</a>
             {' '}and{' '}
-            <a href="#" style={{ color: '#0066CC' }}>Privacy Policy</a>
+            <a href="#" style={{ color: '#2563EB', fontWeight: 500 }}>Privacy Policy</a>
           </p>
         </div>
       </div>
@@ -324,6 +351,10 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
         @keyframes float {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-20px); }
+        }
+        @keyframes shimmer {
+          0% { left: -100%; }
+          100% { left: 100%; }
         }
       `}</style>
     </div>

@@ -1,0 +1,297 @@
+/* ================================================================
+   MEDCONNECT AI — DESIGN TOKENS
+   Premium Medical UI System
+   ================================================================
+   Usage: Import this file in main.jsx or index.css.
+   All component CSS and inline styles should reference these tokens
+   via var(--token-name).
+   ================================================================ */
+
+:root {
+  /* ----------------------------------------------------------
+     THEME A — "Clinical Blue"   (DEFAULT / RECOMMENDED)
+     Professional, trustworthy, calm
+     ---------------------------------------------------------- */
+  --mc-primary-50:  #EEF4FF;
+  --mc-primary-100: #DAE6FF;
+  --mc-primary-200: #BDD4FF;
+  --mc-primary-300: #8DB8FF;
+  --mc-primary-400: #5690FF;
+  --mc-primary-500: #3366FF;   /* main primary */
+  --mc-primary-600: #1A4AE6;
+  --mc-primary-700: #153BBF;
+  --mc-primary-800: #15329A;
+  --mc-primary-900: #172E7A;
+
+  --mc-secondary-50:  #ECFEFF;
+  --mc-secondary-100: #CFFAFE;
+  --mc-secondary-200: #A5F3FC;
+  --mc-secondary-300: #67E8F9;
+  --mc-secondary-400: #22D3EE;
+  --mc-secondary-500: #06B6D4;   /* main secondary / teal */
+  --mc-secondary-600: #0891B2;
+  --mc-secondary-700: #0E7490;
+  --mc-secondary-800: #155E75;
+  --mc-secondary-900: #164E63;
+
+  --mc-accent-50:  #FFF7ED;
+  --mc-accent-100: #FFEDD5;
+  --mc-accent-200: #FED7AA;
+  --mc-accent-300: #FDBA74;
+  --mc-accent-400: #FB923C;
+  --mc-accent-500: #F97316;   /* warm accent for CTAs/alerts */
+  --mc-accent-600: #EA580C;
+  --mc-accent-700: #C2410C;
+  --mc-accent-800: #9A3412;
+  --mc-accent-900: #7C2D12;
+
+  /* Neutrals — warm-grey base for a softer, premium feel */
+  --mc-neutral-0:   #FFFFFF;
+  --mc-neutral-25:  #FCFCFD;
+  --mc-neutral-50:  #F8F9FB;
+  --mc-neutral-100: #F1F3F6;
+  --mc-neutral-200: #E2E5EB;
+  --mc-neutral-300: #CDD1D9;
+  --mc-neutral-400: #9DA3AE;
+  --mc-neutral-500: #6C7381;
+  --mc-neutral-600: #4B5261;
+  --mc-neutral-700: #373E4E;
+  --mc-neutral-800: #242A37;
+  --mc-neutral-900: #141720;
+  --mc-neutral-950: #0B0D14;
+
+  /* Semantic statuses */
+  --mc-success-50:  #ECFDF5;
+  --mc-success-500: #10B981;
+  --mc-success-700: #047857;
+  --mc-warning-50:  #FFFBEB;
+  --mc-warning-500: #F59E0B;
+  --mc-warning-700: #B45309;
+  --mc-error-50:    #FEF2F2;
+  --mc-error-500:   #EF4444;
+  --mc-error-700:   #B91C1C;
+  --mc-info-50:     #EFF6FF;
+  --mc-info-500:    #3B82F6;
+  --mc-info-700:    #1D4ED8;
+
+  /* ----------------------------------------------------------
+     SURFACE / BACKGROUND  (maps semantic names to palette)
+     ---------------------------------------------------------- */
+  --mc-bg-page:       var(--mc-neutral-50);
+  --mc-bg-card:       var(--mc-neutral-0);
+  --mc-bg-elevated:   var(--mc-neutral-0);
+  --mc-bg-sunken:     var(--mc-neutral-100);
+  --mc-bg-overlay:    rgba(11, 13, 20, 0.55);
+
+  /* Glass / frosted surfaces */
+  --mc-glass-bg:      rgba(255, 255, 255, 0.72);
+  --mc-glass-blur:    16px;
+  --mc-glass-border:  rgba(255, 255, 255, 0.45);
+
+  /* ----------------------------------------------------------
+     TEXT  — meets WCAG AA 4.5:1 on respective backgrounds
+     ---------------------------------------------------------- */
+  --mc-text-primary:   var(--mc-neutral-900);   /* body text on white */
+  --mc-text-secondary: var(--mc-neutral-600);   /* captions / labels */
+  --mc-text-muted:     var(--mc-neutral-400);   /* placeholders */
+  --mc-text-inverse:   var(--mc-neutral-0);     /* text on dark bg */
+  --mc-text-link:      var(--mc-primary-500);
+
+  /* ----------------------------------------------------------
+     BORDER
+     ---------------------------------------------------------- */
+  --mc-border-default: var(--mc-neutral-200);
+  --mc-border-subtle:  var(--mc-neutral-100);
+  --mc-border-focus:   var(--mc-primary-500);
+
+  /* ----------------------------------------------------------
+     SPACING SCALE  (4-px grid)
+     ---------------------------------------------------------- */
+  --mc-space-0:   0;
+  --mc-space-1:   4px;
+  --mc-space-2:   8px;
+  --mc-space-3:   12px;
+  --mc-space-4:   16px;
+  --mc-space-5:   20px;
+  --mc-space-6:   24px;
+  --mc-space-8:   32px;
+  --mc-space-10:  40px;
+  --mc-space-12:  48px;
+  --mc-space-16:  64px;
+  --mc-space-20:  80px;
+  --mc-space-24:  96px;
+
+  /* ----------------------------------------------------------
+     BORDER RADIUS — rounded / curved design language
+     ---------------------------------------------------------- */
+  --mc-radius-xs:   6px;
+  --mc-radius-sm:   8px;
+  --mc-radius-md:   12px;
+  --mc-radius-lg:   16px;
+  --mc-radius-xl:   20px;
+  --mc-radius-2xl:  24px;
+  --mc-radius-3xl:  32px;
+  --mc-radius-full: 9999px;
+
+  /* ----------------------------------------------------------
+     ELEVATION / SHADOWS — soft and layered
+     ---------------------------------------------------------- */
+  --mc-shadow-xs:  0 1px 2px rgba(20, 23, 32, 0.04);
+  --mc-shadow-sm:  0 2px 4px rgba(20, 23, 32, 0.06),
+                   0 1px 2px rgba(20, 23, 32, 0.04);
+  --mc-shadow-md:  0 4px 8px -2px rgba(20, 23, 32, 0.08),
+                   0 2px 4px -2px rgba(20, 23, 32, 0.04);
+  --mc-shadow-lg:  0 12px 24px -4px rgba(20, 23, 32, 0.10),
+                   0 4px 8px -2px rgba(20, 23, 32, 0.04);
+  --mc-shadow-xl:  0 24px 48px -8px rgba(20, 23, 32, 0.12),
+                   0 8px 16px -4px rgba(20, 23, 32, 0.06);
+  --mc-shadow-2xl: 0 40px 64px -12px rgba(20, 23, 32, 0.20);
+
+  /* Colored glow shadows */
+  --mc-shadow-primary: 0 8px 32px -6px rgba(51, 102, 255, 0.35);
+  --mc-shadow-success: 0 8px 32px -6px rgba(16, 185, 129, 0.30);
+  --mc-shadow-error:   0 8px 32px -6px rgba(239, 68, 68, 0.30);
+
+  /* ----------------------------------------------------------
+     TYPOGRAPHY — Plus Jakarta Sans / Inter stack
+     ---------------------------------------------------------- */
+  --mc-font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system,
+                  'BlinkMacSystemFont', 'Segoe UI', 'Roboto', sans-serif;
+  --mc-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+
+  /* Type scale (Major Third – 1.250) */
+  --mc-text-xs:   0.75rem;    /* 12px */
+  --mc-text-sm:   0.875rem;   /* 14px */
+  --mc-text-base: 1rem;       /* 16px */
+  --mc-text-lg:   1.125rem;   /* 18px */
+  --mc-text-xl:   1.25rem;    /* 20px */
+  --mc-text-2xl:  1.5rem;     /* 24px */
+  --mc-text-3xl:  1.875rem;   /* 30px */
+  --mc-text-4xl:  2.25rem;    /* 36px */
+  --mc-text-5xl:  3rem;       /* 48px */
+  --mc-text-6xl:  3.75rem;    /* 60px */
+
+  /* Leading */
+  --mc-leading-tight:  1.25;
+  --mc-leading-normal: 1.5;
+  --mc-leading-relaxed: 1.625;
+
+  /* Tracking */
+  --mc-tracking-tight:  -0.025em;
+  --mc-tracking-normal: 0;
+  --mc-tracking-wide:   0.025em;
+
+  /* Font weights */
+  --mc-font-regular: 400;
+  --mc-font-medium:  500;
+  --mc-font-semibold: 600;
+  --mc-font-bold:    700;
+  --mc-font-extrabold: 800;
+
+  /* ----------------------------------------------------------
+     TRANSITIONS / MOTION
+     ---------------------------------------------------------- */
+  --mc-ease-default:   cubic-bezier(0.4, 0, 0.2, 1);   /* ease-in-out */
+  --mc-ease-in:        cubic-bezier(0.4, 0, 1, 1);
+  --mc-ease-out:       cubic-bezier(0, 0, 0.2, 1);
+  --mc-ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --mc-duration-fast:    120ms;
+  --mc-duration-normal:  200ms;
+  --mc-duration-slow:    350ms;
+  --mc-duration-slower:  500ms;
+
+  /* ----------------------------------------------------------
+     Z-INDEX SCALE
+     ---------------------------------------------------------- */
+  --mc-z-base:     0;
+  --mc-z-dropdown: 100;
+  --mc-z-sticky:   200;
+  --mc-z-overlay:  300;
+  --mc-z-modal:    400;
+  --mc-z-toast:    500;
+}
+
+/* ================================================================
+   THEME B — "Sage Green"   (Alternative #1)
+   Calming, wellness-oriented, nature-inspired
+   Swap by adding class="theme-sage" to <html> or <body>.
+   ================================================================ */
+.theme-sage {
+  --mc-primary-50:  #ECFDF5;
+  --mc-primary-100: #D1FAE5;
+  --mc-primary-200: #A7F3D0;
+  --mc-primary-300: #6EE7B7;
+  --mc-primary-400: #34D399;
+  --mc-primary-500: #059669;
+  --mc-primary-600: #047857;
+  --mc-primary-700: #065F46;
+  --mc-primary-800: #064E3B;
+  --mc-primary-900: #022C22;
+
+  --mc-secondary-50:  #F0FDF4;
+  --mc-secondary-100: #DCFCE7;
+  --mc-secondary-200: #BBF7D0;
+  --mc-secondary-300: #86EFAC;
+  --mc-secondary-400: #4ADE80;
+  --mc-secondary-500: #22C55E;
+  --mc-secondary-600: #16A34A;
+  --mc-secondary-700: #15803D;
+  --mc-secondary-800: #166534;
+  --mc-secondary-900: #14532D;
+
+  --mc-accent-50:  #FDF4FF;
+  --mc-accent-100: #FAE8FF;
+  --mc-accent-200: #F5D0FE;
+  --mc-accent-300: #F0ABFC;
+  --mc-accent-400: #E879F9;
+  --mc-accent-500: #D946EF;
+  --mc-accent-600: #C026D3;
+  --mc-accent-700: #A21CAF;
+  --mc-accent-800: #86198F;
+  --mc-accent-900: #701A75;
+
+  --mc-shadow-primary: 0 8px 32px -6px rgba(5, 150, 105, 0.35);
+}
+
+/* ================================================================
+   THEME C — "Midnight Indigo"   (Alternative #2)
+   Sophisticated, modern tech-forward look
+   Swap by adding class="theme-indigo" to <html> or <body>.
+   ================================================================ */
+.theme-indigo {
+  --mc-primary-50:  #EEF2FF;
+  --mc-primary-100: #E0E7FF;
+  --mc-primary-200: #C7D2FE;
+  --mc-primary-300: #A5B4FC;
+  --mc-primary-400: #818CF8;
+  --mc-primary-500: #6366F1;
+  --mc-primary-600: #4F46E5;
+  --mc-primary-700: #4338CA;
+  --mc-primary-800: #3730A3;
+  --mc-primary-900: #312E81;
+
+  --mc-secondary-50:  #FFF1F2;
+  --mc-secondary-100: #FFE4E6;
+  --mc-secondary-200: #FECDD3;
+  --mc-secondary-300: #FDA4AF;
+  --mc-secondary-400: #FB7185;
+  --mc-secondary-500: #F43F5E;
+  --mc-secondary-600: #E11D48;
+  --mc-secondary-700: #BE123C;
+  --mc-secondary-800: #9F1239;
+  --mc-secondary-900: #881337;
+
+  --mc-accent-50:  #FFFBEB;
+  --mc-accent-100: #FEF3C7;
+  --mc-accent-200: #FDE68A;
+  --mc-accent-300: #FCD34D;
+  --mc-accent-400: #FBBF24;
+  --mc-accent-500: #F59E0B;
+  --mc-accent-600: #D97706;
+  --mc-accent-700: #B45309;
+  --mc-accent-800: #92400E;
+  --mc-accent-900: #78350F;
+
+  --mc-shadow-primary: 0 8px 32px -6px rgba(99, 102, 241, 0.35);
+}

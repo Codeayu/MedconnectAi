@@ -1,4 +1,5 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes as perm_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 import logging
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 @api_view(["POST"])
+@perm_classes([IsAuthenticated])
 def medical_chatbot(request):
     """
     Main entry point for MedConnect multimodal chatbot

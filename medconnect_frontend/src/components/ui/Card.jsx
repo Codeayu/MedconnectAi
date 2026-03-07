@@ -8,7 +8,7 @@ export default function Card({
   glow = false,
   className = '',
   onClick,
-  padding = '1.5rem',
+  padding = '1.75rem',
   style = {},
   ...props 
 }) {
@@ -16,27 +16,27 @@ export default function Card({
 
   const baseStyle = {
     background: glass 
-      ? 'rgba(255, 255, 255, 0.8)'
+      ? 'rgba(255, 255, 255, 0.85)'
       : gradient 
-        ? 'linear-gradient(135deg, #ffffff 0%, #f8fafb 100%)'
+        ? 'linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%)'
         : 'white',
-    backdropFilter: glass ? 'blur(20px)' : 'none',
-    WebkitBackdropFilter: glass ? 'blur(20px)' : 'none',
-    borderRadius: '20px',
+    backdropFilter: glass ? 'blur(24px)' : 'none',
+    WebkitBackdropFilter: glass ? 'blur(24px)' : 'none',
+    borderRadius: '24px',
     border: glass 
-      ? '1px solid rgba(255, 255, 255, 0.4)'
-      : '1px solid rgba(0, 0, 0, 0.06)',
+      ? '1px solid rgba(255, 255, 255, 0.5)'
+      : '1px solid rgba(0, 0, 0, 0.04)',
     padding: padding,
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     cursor: onClick ? 'pointer' : 'default',
     position: 'relative',
     overflow: 'hidden',
     boxShadow: isHovered && hover
-      ? '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 102, 204, 0.1)'
-      : '0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04)',
-    transform: isHovered && hover ? 'translateY(-8px)' : 'translateY(0)',
+      ? '0 30px 60px -15px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(37, 99, 235, 0.08)'
+      : '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+    transform: isHovered && hover ? 'translateY(-6px)' : 'translateY(0)',
     ...(glow && isHovered && {
-      boxShadow: '0 25px 50px -12px rgba(0, 102, 204, 0.25), 0 0 30px rgba(0, 102, 204, 0.15)'
+      boxShadow: '0 30px 60px -15px rgba(37, 99, 235, 0.2), 0 0 40px rgba(37, 99, 235, 0.1)'
     }),
     ...style
   }
@@ -58,11 +58,11 @@ export default function Card({
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.03) 0%, rgba(0, 191, 165, 0.03) 100%)',
+          background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.02) 0%, rgba(124, 58, 237, 0.02) 100%)',
           opacity: isHovered ? 1 : 0,
           transition: 'opacity 0.4s ease',
           pointerEvents: 'none',
-          borderRadius: '20px'
+          borderRadius: '24px'
         }} />
       )}
       

@@ -1,5 +1,6 @@
 import os
 import logging
+import threading
 from pinecone import Pinecone
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
@@ -18,26 +19,34 @@ NAMESPACE = "medical"
 logger = logging.getLogger(__name__)
 
 # -------------------------
-# INIT (Lazy loading)
+# INIT (Lazy loading, thread-safe)
 # -------------------------
 
 _pc = None
 _index = None
 _embedding_model = None
+_model_lock = threading.Lock()
+_index_lock = threading.Lock()
 
 
 def get_pinecone_index():
     global _pc, _index
     if _index is None:
-        _pc = Pinecone(api_key=PINECONE_API_KEY)
-        _index = _pc.Index(PINECONE_INDEX_NAME)
+        with _index_lock:
+            if _index is None:
+                _pc = Pinecone(api_key=PINECONE_API_KEY)
+                _index = _pc.Index(PINECONE_INDEX_NAME)
     return _index
 
 
 def get_embedding_model():
     global _embedding_model
     if _embedding_model is None:
-        _embedding_model = SentenceTransformer("BAAI/bge-base-en-v1.5")
+        with _model_lock:
+            if _embedding_model is None:
+                logger.info("Loading embedding model BAAI/bge-base-en-v1.5 ...")
+                _embedding_model = SentenceTransformer("BAAI/bge-base-en-v1.5")
+                logger.info("Embedding model loaded successfully.")
     return _embedding_model
 
 

@@ -1,34 +1,17 @@
 import { useState, useEffect } from 'react'
-import Card from './ui/Card'
-import Button from './ui/Button'
+import McCard from './ui-next/McCard'
+import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
 import VideoCall from './VideoCall'
 import { api } from '../api'
 import { getUserName, logout } from '../auth'
+import { UserDoctor, Star, Calendar, Clock, CheckCircle, Video, MessageCircle, Phone, BarChart, X, AlertCircle, FileText } from './ui/icons/Icon'
 
-const EMOJI = {
-  doctor: '👨‍⚕️',
-  patient: '👤',
-  calendar: '📅',
-  clock: '🕐',
-  check: '✅',
-  pending: '⏳',
-  ongoing: '🔄',
-  cancel: '❌',
-  video: '📹',
-  chat: '💬',
-  phone: '📞',
-  star: '⭐',
-  money: '💰',
-  online: '🟢',
-  offline: '🔴'
-}
-
-export default function DoctorDashboard({ onLogout }) {
+export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   const [dashboardData, setDashboardData] = useState(null)
   const [consultations, setConsultations] = useState([])
   const [selectedConsultation, setSelectedConsultation] = useState(null)
-  const [activeTab, setActiveTab] = useState('pending')
+  const [activeTab, setActiveTab] = useState(initialTab || 'pending')
   const [isOnline, setIsOnline] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -198,13 +181,14 @@ export default function DoctorDashboard({ onLogout }) {
   }
 
   const getTypeIcon = (type) => {
-    const icons = {
-      'VIDEO': EMOJI.video,
-      'AUDIO': EMOJI.phone,
-      'CHAT': EMOJI.chat,
-      'IN_PERSON': EMOJI.doctor
+    const IconMap = {
+      'VIDEO': Video,
+      'AUDIO': Phone,
+      'CHAT': MessageCircle,
+      'IN_PERSON': UserDoctor
     }
-    return icons[type] || EMOJI.video
+    const IconComp = IconMap[type] || Video
+    return <IconComp size={16} />
   }
 
   if (loading) {
@@ -227,7 +211,7 @@ export default function DoctorDashboard({ onLogout }) {
     <div style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header */}
       <section style={{
-        background: 'linear-gradient(135deg, #0066CC 0%, #004C99 100%)',
+        background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-primary-700) 100%)',
         color: 'white',
         padding: '2rem 0'
       }}>
@@ -250,7 +234,7 @@ export default function DoctorDashboard({ onLogout }) {
                 justifyContent: 'center',
                 fontSize: '2rem'
               }}>
-                {EMOJI.doctor}
+                <UserDoctor size={32} color="white" />
               </div>
               <div>
                 <h1 style={{ fontSize: '1.75rem', marginBottom: '0.25rem', color: 'white' }}>
@@ -260,8 +244,8 @@ export default function DoctorDashboard({ onLogout }) {
                   {profile.specialization_display || 'Specialist'}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-                  <span>{EMOJI.star} {profile.average_rating || 0} ({profile.total_reviews || 0} reviews)</span>
-                  <span>{EMOJI.money} ₹{profile.consultation_fee || 0}/consultation</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}><Star size={16} color="#FFD700" /> {profile.average_rating || 0} ({profile.total_reviews || 0} reviews)</span>
+                  <span>₹{profile.consultation_fee || 0}/consultation</span>
                 </div>
               </div>
             </div>
@@ -283,12 +267,12 @@ export default function DoctorDashboard({ onLogout }) {
                   transition: 'all 0.3s'
                 }}
               >
-                {isOnline ? EMOJI.online : EMOJI.offline}
+                <span style={{ width: 10, height: 10, borderRadius: '50%', background: isOnline ? '#fff' : 'rgba(255,255,255,0.5)', display: 'inline-block' }} />
                 {isOnline ? 'Online' : 'Offline'}
               </button>
-              <Button variant="outline" onClick={handleLogout} style={{ color: 'white', borderColor: 'rgba(255,255,255,0.5)' }}>
+              <McButton variant="outline" onClick={handleLogout} style={{ color: 'white', borderColor: 'rgba(255,255,255,0.5)' }}>
                 Logout
-              </Button>
+              </McButton>
             </div>
           </div>
         </div>
@@ -302,25 +286,27 @@ export default function DoctorDashboard({ onLogout }) {
           gap: '1rem' 
         }}>
           {[
-            { label: 'Pending', value: stats.pending || 0, icon: EMOJI.pending, color: '#FFB300' },
-            { label: 'Confirmed', value: stats.confirmed || 0, icon: EMOJI.calendar, color: '#2196F3' },
-            { label: 'Ongoing', value: stats.ongoing || 0, icon: EMOJI.ongoing, color: '#0066CC' },
-            { label: 'Completed', value: stats.completed || 0, icon: EMOJI.check, color: '#00C853' },
-            { label: "Today's", value: stats.todays_appointments || 0, icon: EMOJI.clock, color: '#9C27B0' },
-            { label: 'Total', value: stats.total || 0, icon: EMOJI.doctor, color: '#00BFA5' }
+            { label: 'Pending', value: stats.pending || 0, IconComp: Clock, color: '#FFB300' },
+            { label: 'Confirmed', value: stats.confirmed || 0, IconComp: Calendar, color: '#2196F3' },
+            { label: 'Ongoing', value: stats.ongoing || 0, IconComp: BarChart, color: 'var(--mc-primary-500)' },
+            { label: 'Completed', value: stats.completed || 0, IconComp: CheckCircle, color: '#00C853' },
+            { label: "Today's", value: stats.todays_appointments || 0, IconComp: Calendar, color: '#9C27B0' },
+            { label: 'Total', value: stats.total || 0, IconComp: UserDoctor, color: '#00BFA5' }
           ].map((stat, i) => (
-            <Card key={i} style={{ padding: '1.25rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{stat.icon}</div>
+            <McCard key={i} style={{ padding: '1.25rem', textAlign: 'center' }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: `${stat.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem' }}>
+                <stat.IconComp size={20} color={stat.color} />
+              </div>
               <div style={{ fontSize: '1.75rem', fontWeight: '700', color: stat.color }}>{stat.value}</div>
               <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{stat.label}</div>
-            </Card>
+            </McCard>
           ))}
         </div>
       </div>
 
       {/* Consultations Section */}
       <div className="container" style={{ padding: '2rem 1rem' }}>
-        <h2 style={{ marginBottom: '1.5rem' }}>📋 Consultations</h2>
+        <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FileText size={22} /> Consultations</h2>
         
         {/* Tabs */}
         <div style={{ 
@@ -331,11 +317,11 @@ export default function DoctorDashboard({ onLogout }) {
           paddingBottom: '0.5rem'
         }}>
           {[
-            { id: 'pending', label: 'Pending', icon: EMOJI.pending },
-            { id: 'confirmed', label: 'Confirmed', icon: EMOJI.calendar },
-            { id: 'ongoing', label: 'Ongoing', icon: EMOJI.ongoing },
-            { id: 'completed', label: 'Completed', icon: EMOJI.check },
-            { id: 'all', label: 'All', icon: '📊' }
+            { id: 'pending', label: 'Pending', IconComp: Clock },
+            { id: 'confirmed', label: 'Confirmed', IconComp: Calendar },
+            { id: 'ongoing', label: 'Ongoing', IconComp: BarChart },
+            { id: 'completed', label: 'Completed', IconComp: CheckCircle },
+            { id: 'all', label: 'All', IconComp: FileText }
           ].map(tab => (
             <button
               key={tab.id}
@@ -347,7 +333,7 @@ export default function DoctorDashboard({ onLogout }) {
                 padding: '0.75rem 1.25rem',
                 borderRadius: '8px',
                 border: activeTab === tab.id ? 'none' : '1px solid var(--border)',
-                background: activeTab === tab.id ? 'var(--primary)' : 'white',
+                background: activeTab === tab.id ? 'var(--mc-primary-500)' : 'white',
                 color: activeTab === tab.id ? 'white' : 'var(--text-primary)',
                 cursor: 'pointer',
                 fontWeight: '500',
@@ -355,26 +341,28 @@ export default function DoctorDashboard({ onLogout }) {
                 transition: 'all 0.2s'
               }}
             >
-              {tab.icon} {tab.label}
+              <tab.IconComp size={16} /> {tab.label}
             </button>
           ))}
         </div>
 
         {/* Consultation List */}
         {consultations.length === 0 ? (
-          <Card style={{ padding: '3rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📭</div>
+          <McCard style={{ padding: '3rem', textAlign: 'center' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--mc-neutral-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <FileText size={28} color="var(--mc-neutral-400)" />
+            </div>
             <h3>No consultations found</h3>
             <p style={{ color: 'var(--text-secondary)' }}>
               {activeTab === 'pending' 
                 ? 'No pending consultation requests at the moment.'
                 : `No ${activeTab} consultations to show.`}
             </p>
-          </Card>
+          </McCard>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {consultations.map(consultation => (
-              <Card key={consultation.id} hover style={{ padding: '1.5rem' }}>
+              <McCard key={consultation.id} hover style={{ padding: '1.5rem' }}>
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
@@ -389,13 +377,13 @@ export default function DoctorDashboard({ onLogout }) {
                         width: '45px',
                         height: '45px',
                         borderRadius: '50%',
-                        background: 'var(--primary-light)',
+                        background: 'var(--mc-primary-100)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '1.25rem'
                       }}>
-                        {EMOJI.patient}
+                        <UserDoctor size={22} color="var(--mc-primary-500)" />
                       </div>
                       <div>
                         <h4 style={{ marginBottom: '0.125rem' }}>{consultation.patient_name}</h4>
@@ -428,7 +416,7 @@ export default function DoctorDashboard({ onLogout }) {
                         {consultation.consultation_type_display}
                       </div>
                       <div style={{ marginTop: '0.5rem', color: 'var(--text-secondary)' }}>
-                        {EMOJI.calendar} {formatDate(consultation.scheduled_date)}
+                        <Calendar size={14} /> {formatDate(consultation.scheduled_date)}
                         {consultation.scheduled_time && ` at ${formatTime(consultation.scheduled_time)}`}
                       </div>
                       <div style={{ marginTop: '0.25rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
@@ -449,67 +437,71 @@ export default function DoctorDashboard({ onLogout }) {
                 }}>
                   {consultation.status === 'PENDING' && (
                     <>
-                      <Button 
+                      <McButton 
                         variant="primary" 
                         size="sm"
                         onClick={() => handleAccept(consultation.id)}
                         disabled={actionLoading}
+                        icon={CheckCircle}
                       >
-                        ✓ Accept
-                      </Button>
-                      <Button 
-                        variant="outline" 
+                        Accept
+                      </McButton>
+                      <McButton 
+                        variant="danger" 
                         size="sm"
                         onClick={() => handleReject(consultation.id)}
                         disabled={actionLoading}
-                        style={{ color: 'var(--error)', borderColor: 'var(--error)' }}
+                        icon={X}
                       >
-                        ✗ Reject
-                      </Button>
+                        Reject
+                      </McButton>
                     </>
                   )}
                   
                   {consultation.status === 'CONFIRMED' && (
-                    <Button 
+                    <McButton 
                       variant="primary" 
                       size="sm"
                       onClick={() => handleStart(consultation.id)}
                       disabled={actionLoading}
+                      icon={Video}
                     >
-                      {EMOJI.video} Start Consultation
-                    </Button>
+                      Start Consultation
+                    </McButton>
                   )}
                   
                   {consultation.status === 'ONGOING' && (
                     <>
                       {consultation.consultation_type === 'VIDEO' && (
-                        <Button 
-                          variant="gradient" 
+                        <McButton 
+                          variant="primary" 
                           size="sm"
                           onClick={() => handleStartVideoCall(consultation)}
+                          icon={Video}
                         >
-                          {EMOJI.video} Start Video Call
-                        </Button>
+                          Start Video Call
+                        </McButton>
                       )}
-                      <Button 
-                        variant="primary" 
+                      <McButton 
+                        variant="success" 
                         size="sm"
                         onClick={() => setSelectedConsultation(consultation)}
+                        icon={CheckCircle}
                       >
-                        {EMOJI.check} Complete & Add Prescription
-                      </Button>
+                        Complete & Add Prescription
+                      </McButton>
                     </>
                   )}
 
-                  <Button 
+                  <McButton 
                     variant="outline" 
                     size="sm"
                     onClick={() => setSelectedConsultation(consultation)}
                   >
                     View Details
-                  </Button>
+                  </McButton>
                 </div>
-              </Card>
+              </McCard>
             ))}
           </div>
         )}
@@ -540,7 +532,7 @@ export default function DoctorDashboard({ onLogout }) {
           }}
           onClick={() => setSelectedConsultation(null)}
         >
-          <Card 
+          <McCard 
             style={{ 
               width: '100%', 
               maxWidth: '600px', 
@@ -562,12 +554,13 @@ export default function DoctorDashboard({ onLogout }) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: 'var(--text-muted)'
+                  color: 'var(--text-muted)',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
-                ✕
+                <X size={22} />
               </button>
             </div>
 
@@ -578,7 +571,7 @@ export default function DoctorDashboard({ onLogout }) {
               borderRadius: '12px',
               marginBottom: '1.5rem'
             }}>
-              <h4 style={{ marginBottom: '0.75rem' }}>{EMOJI.patient} Patient Information</h4>
+              <h4 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><UserDoctor size={18} /> Patient Information</h4>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Name</span>
@@ -602,7 +595,7 @@ export default function DoctorDashboard({ onLogout }) {
             {/* Symptoms */}
             {selectedConsultation.symptoms && (
               <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ marginBottom: '0.5rem' }}>🩺 Reported Symptoms</h4>
+                <h4 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertCircle size={18} color="var(--mc-primary-500)" /> Reported Symptoms</h4>
                 <p style={{ 
                   background: 'var(--gray-50)', 
                   padding: '1rem', 
@@ -616,7 +609,7 @@ export default function DoctorDashboard({ onLogout }) {
             {/* AI Prediction */}
             {selectedConsultation.ai_prediction && (
               <div style={{ marginBottom: '1.5rem' }}>
-                <h4 style={{ marginBottom: '0.5rem' }}>🤖 AI Analysis</h4>
+                <h4 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><BarChart size={18} color="var(--mc-primary-500)" /> AI Analysis</h4>
                 <div style={{ 
                   background: '#E3F2FD', 
                   padding: '1rem', 
@@ -643,7 +636,7 @@ export default function DoctorDashboard({ onLogout }) {
                 paddingTop: '1.5rem',
                 marginTop: '1rem'
               }}>
-                <h4 style={{ marginBottom: '1rem' }}>📝 Add Prescription & Notes</h4>
+                <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FileText size={18} /> Add Prescription & Notes</h4>
                 
                 <div style={{ marginBottom: '1rem' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
@@ -702,14 +695,15 @@ export default function DoctorDashboard({ onLogout }) {
                   />
                 </div>
 
-                <Button 
+                <McButton 
                   variant="primary"
                   onClick={() => handleComplete(selectedConsultation.id)}
                   disabled={actionLoading}
                   style={{ width: '100%' }}
+                  icon={CheckCircle}
                 >
-                  {actionLoading ? 'Saving...' : '✓ Complete Consultation'}
-                </Button>
+                  {actionLoading ? 'Saving...' : 'Complete Consultation'}
+                </McButton>
               </div>
             )}
 
@@ -746,7 +740,7 @@ export default function DoctorDashboard({ onLogout }) {
                 )}
               </div>
             )}
-          </Card>
+          </McCard>
         </div>
       )}
     </div>

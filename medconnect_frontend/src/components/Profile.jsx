@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
-import Card from './ui/Card'
-import Button from './ui/Button'
-import Input from './ui/Input'
+import McCard from './ui-next/McCard'
+import McButton from './ui-next/McButton'
+import McInput from './ui-next/McInput'
 import Badge from './ui/Badge'
 import { api } from '../api'
 import { getUserName, getEmail, getUserRole } from '../auth'
+import { CheckCircle, AlertCircle, Settings } from './ui/icons/Icon'
 
-export default function Profile({ onNavigate }) {
+export default function Profile({ onNavigate, onBack }) {
   const [profile, setProfile] = useState({
     full_name: '',
     age: '',
@@ -95,14 +96,14 @@ export default function Profile({ onNavigate }) {
       <div className="container" style={{ maxWidth: '800px' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <Button 
+          <McButton 
             variant="ghost" 
             size="sm"
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => onBack ? onBack() : onNavigate('dashboard')}
             style={{ marginBottom: '1rem' }}
           >
-            Back to Dashboard
-          </Button>
+            ← Back to Dashboard
+          </McButton>
           <h1 style={{ marginBottom: '0.5rem' }}>My Profile</h1>
           <p style={{ color: 'var(--text-secondary)' }}>
             Manage your personal information
@@ -110,7 +111,7 @@ export default function Profile({ onNavigate }) {
         </div>
 
         {/* Profile Card */}
-        <Card style={{ marginBottom: '1.5rem' }}>
+        <McCard style={{ marginBottom: '1.5rem' }}>
           {/* Profile Header */}
           <div style={{
             display: 'flex',
@@ -124,7 +125,7 @@ export default function Profile({ onNavigate }) {
               width: '100px',
               height: '100px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+              background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -165,7 +166,7 @@ export default function Profile({ onNavigate }) {
                 alignItems: 'center',
                 gap: '0.5rem'
               }}>
-                <span>{message.type === 'success' ? 'Success!' : 'Error:'}</span>
+                <span>{message.type === 'success' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}</span>
                 {message.text}
               </div>
             )}
@@ -185,7 +186,7 @@ export default function Profile({ onNavigate }) {
                 }}>
                   Full Name
                 </label>
-                <Input
+                <McInput
                   value={profile.full_name}
                   onChange={e => updateField('full_name', e.target.value)}
                   placeholder="Enter your full name"
@@ -201,7 +202,7 @@ export default function Profile({ onNavigate }) {
                 }}>
                   Age
                 </label>
-                <Input
+                <McInput
                   type="number"
                   value={profile.age}
                   onChange={e => updateField('age', e.target.value)}
@@ -238,22 +239,22 @@ export default function Profile({ onNavigate }) {
               </div>
             </div>
 
-            <Button 
+            <McButton 
               variant="primary"
               onClick={saveProfile}
               disabled={saving}
               style={{ 
                 width: '100%',
-                background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)'
+                background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)'
               }}
             >
               {saving ? 'Saving...' : 'Save Changes'}
-            </Button>
+            </McButton>
           </div>
-        </Card>
+        </McCard>
 
         {/* Account Info */}
-        <Card>
+        <McCard>
           <div style={{ padding: '1.5rem' }}>
             <h3 style={{ marginBottom: '1rem' }}>Account Information</h3>
             
@@ -282,7 +283,7 @@ export default function Profile({ onNavigate }) {
                 <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>Account Type</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Free Plan</div>
               </div>
-              <Button variant="outline" size="sm">Upgrade</Button>
+              <McButton variant="outline" size="sm">Upgrade</McButton>
             </div>
 
             <div style={{
@@ -295,10 +296,10 @@ export default function Profile({ onNavigate }) {
                 <div style={{ fontWeight: 500, marginBottom: '0.25rem' }}>Password</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Last changed 30 days ago</div>
               </div>
-              <Button variant="outline" size="sm">Change</Button>
+              <McButton variant="outline" size="sm">Change</McButton>
             </div>
           </div>
-        </Card>
+        </McCard>
       </div>
     </div>
   )

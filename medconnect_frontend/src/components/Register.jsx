@@ -1,24 +1,12 @@
 import { useState } from "react"
-import Button from './ui/Button'
-import Input from './ui/Input'
-import Card from './ui/Card'
+import McButton from './ui-next/McButton'
+import McInput from './ui-next/McInput'
+import McCard from './ui-next/McCard'
 import Badge from './ui/Badge'
 import { api } from '../api'
+import { Stethoscope, CheckCircle, Shield, Heart, ArrowRight, AlertCircle } from './ui/icons/Icon'
 
-const EMOJI = {
-  hospital: String.fromCodePoint(0x1F3E5),
-  user: String.fromCodePoint(0x1F464),
-  email: String.fromCodePoint(0x2709, 0xFE0F),
-  key: String.fromCodePoint(0x1F511),
-  phone: String.fromCodePoint(0x1F4DE),
-  sparkles: String.fromCodePoint(0x2728),
-  rocket: String.fromCodePoint(0x1F680),
-  check: String.fromCodePoint(0x2705),
-  shield: String.fromCodePoint(0x1F6E1, 0xFE0F),
-  heart: String.fromCodePoint(0x2764, 0xFE0F)
-}
-
-export default function Register({ onRegister }) {
+export default function Register({ onRegister, onDoctorRegister }) {
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
@@ -96,87 +84,111 @@ export default function Register({ onRegister }) {
       {/* Left Side - Branding */}
       <div style={{
         flex: 1,
-        background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)',
+        background: 'linear-gradient(135deg, #030712 0%, #111827 100%)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '3rem',
+        padding: '3.5rem',
         position: 'relative',
         overflow: 'hidden'
       }}>
         {/* Animated Background */}
         <div style={{
           position: 'absolute',
-          top: '20%',
-          left: '10%',
-          width: '300px',
-          height: '300px',
-          background: 'radial-gradient(circle, rgba(0, 191, 165, 0.3) 0%, transparent 70%)',
-          filter: 'blur(60px)',
+          top: '15%',
+          left: '5%',
+          width: '350px',
+          height: '350px',
+          background: 'radial-gradient(circle, rgba(124, 58, 237, 0.25) 0%, transparent 70%)',
+          filter: 'blur(80px)',
           animation: 'float 8s ease-in-out infinite'
         }} />
         <div style={{
           position: 'absolute',
-          bottom: '20%',
-          right: '10%',
-          width: '250px',
-          height: '250px',
-          background: 'radial-gradient(circle, rgba(0, 102, 204, 0.25) 0%, transparent 70%)',
-          filter: 'blur(50px)',
+          bottom: '15%',
+          right: '5%',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(37, 99, 235, 0.2) 0%, transparent 70%)',
+          filter: 'blur(70px)',
           animation: 'float 10s ease-in-out infinite reverse'
         }} />
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          right: '30%',
+          width: '200px',
+          height: '200px',
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          animation: 'float 6s ease-in-out infinite'
+        }} />
 
-        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '450px' }}>
+        <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', maxWidth: '480px' }}>
           <div style={{
-            width: '100px',
-            height: '100px',
-            margin: '0 auto 2rem',
-            background: 'linear-gradient(135deg, #00BFA5 0%, #0066CC 100%)',
-            borderRadius: '28px',
+            width: '110px',
+            height: '110px',
+            margin: '0 auto 2.5rem',
+            background: 'linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)',
+            borderRadius: '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '3rem',
-            boxShadow: '0 20px 50px rgba(0, 191, 165, 0.4)'
+            fontSize: '3.5rem',
+            boxShadow: '0 25px 60px rgba(124, 58, 237, 0.4)',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
-            {EMOJI.hospital}
+            <Stethoscope size={52} color="white" style={{ position: 'relative', zIndex: 1 }} />
           </div>
           
           <h1 style={{
-            fontSize: '2.5rem',
+            fontSize: '2.75rem',
             fontWeight: 800,
             color: 'white',
-            marginBottom: '1rem',
-            fontFamily: 'Poppins, sans-serif'
+            marginBottom: '1.25rem',
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            letterSpacing: '-0.02em'
           }}>
             Join MedConnect AI
           </h1>
           
           <p style={{
-            fontSize: '1.1rem',
-            color: 'rgba(255, 255, 255, 0.7)',
+            fontSize: '1.15rem',
+            color: 'rgba(255, 255, 255, 0.65)',
             lineHeight: 1.8,
-            marginBottom: '2rem'
+            marginBottom: '2.5rem'
           }}>
             Create your free account and get access to AI-powered healthcare services, 
             verified doctor consultations, and personalized health insights.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', alignItems: 'center' }}>
             {[
-              { icon: EMOJI.check, text: 'Free AI Symptom Analysis' },
-              { icon: EMOJI.check, text: 'Verified Doctor Network' },
-              { icon: EMOJI.check, text: 'Secure & Private' }
+              { icon: CheckCircle, text: 'Free AI Symptom Analysis' },
+              { icon: CheckCircle, text: 'Verified Doctor Network' },
+              { icon: CheckCircle, text: 'Secure & Private' }
             ].map((item, i) => (
               <div key={i} style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '10px',
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '1rem'
+                gap: '12px',
+                color: 'rgba(255, 255, 255, 0.75)',
+                fontSize: '1.05rem',
+                fontWeight: 500
               }}>
-                <span>{item.icon}</span>
+                <span style={{
+                  background: 'rgba(16, 185, 129, 0.2)',
+                  color: '#10B981',
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '0.9rem'
+                }}><item.icon size={16} color="#10B981" /></span>
                 {item.text}
               </div>
             ))}
@@ -190,54 +202,55 @@ export default function Register({ onRegister }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(180deg, #f8fafb 0%, white 100%)',
-        padding: '3rem'
+        background: 'linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%)',
+        padding: '3.5rem'
       }}>
-        <div style={{ width: '100%', maxWidth: '450px' }}>
+        <div style={{ width: '100%', maxWidth: '480px' }}>
           {/* Step Indicator */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '1rem',
-            marginBottom: '2rem'
+            marginBottom: '2.5rem'
           }}>
             {[1, 2].map(s => (
-              <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '44px',
+                  height: '44px',
                   borderRadius: '50%',
                   background: step >= s 
-                    ? 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)' 
-                    : 'var(--gray-200)',
-                  color: step >= s ? 'white' : 'var(--text-muted)',
+                    ? 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)' 
+                    : '#E5E7EB',
+                  color: step >= s ? 'white' : '#9CA3AF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: 700,
-                  fontSize: '1rem',
-                  transition: 'all 0.3s ease',
-                  boxShadow: step >= s ? '0 4px 15px rgba(0, 102, 204, 0.3)' : 'none'
+                  fontSize: '1.05rem',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: step >= s ? '0 8px 20px rgba(37, 99, 235, 0.35)' : 'none'
                 }}>
-                  {step > s ? EMOJI.check : s}
+                  {step > s ? <CheckCircle size={18} /> : s}
                 </div>
                 <span style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 500,
-                  color: step >= s ? 'var(--text-primary)' : 'var(--text-muted)'
+                  fontSize: '0.95rem',
+                  fontWeight: 600,
+                  color: step >= s ? '#111827' : '#9CA3AF'
                 }}>
                   {s === 1 ? 'Account' : 'Profile'}
                 </span>
                 {s < 2 && (
                   <div style={{
-                    width: '40px',
-                    height: '2px',
+                    width: '50px',
+                    height: '3px',
                     background: step > 1 
-                      ? 'linear-gradient(90deg, #0066CC, #00BFA5)' 
-                      : 'var(--gray-200)',
-                    marginLeft: '0.5rem',
-                    borderRadius: '2px'
+                      ? 'linear-gradient(90deg, #2563EB, #7C3AED)' 
+                      : '#E5E7EB',
+                    marginLeft: '0.75rem',
+                    borderRadius: '3px',
+                    transition: 'all 0.3s ease'
                   }} />
                 )}
               </div>
@@ -265,7 +278,7 @@ export default function Register({ onRegister }) {
             </p>
           </div>
 
-          <Card style={{ padding: '2rem' }}>
+          <McCard style={{ padding: '2rem' }}>
             {error && (
               <div style={{
                 padding: '1rem',
@@ -283,60 +296,56 @@ export default function Register({ onRegister }) {
 
             {step === 1 ? (
               <>
-                <Input
+                <McInput
                   label="Email Address"
                   type="email"
-                  icon={EMOJI.email}
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={e => updateField('email', e.target.value)}
                 />
 
-                <Input
+                <McInput
                   label="Phone Number"
                   type="tel"
-                  icon={EMOJI.phone}
                   placeholder="+91 XXXXX XXXXX"
                   value={formData.phone}
                   onChange={e => updateField('phone', e.target.value)}
                 />
 
-                <Input
+                <McInput
                   label="Password"
                   type="password"
-                  icon={EMOJI.key}
                   placeholder="Min. 6 characters"
                   value={formData.password}
                   onChange={e => updateField('password', e.target.value)}
                 />
 
-                <Input
+                <McInput
                   label="Confirm Password"
                   type="password"
-                  icon={EMOJI.key}
                   placeholder="Re-enter password"
                   value={formData.confirmPassword}
                   onChange={e => updateField('confirmPassword', e.target.value)}
                 />
 
-                <Button
-                  variant="gradient"
+                <McButton
+                  variant="primary"
                   onClick={goToStep2}
                   style={{ 
                     width: '100%',
                     padding: '16px',
-                    marginTop: '0.5rem'
+                    marginTop: '0.5rem',
+                    background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)'
                   }}
                 >
                   Continue
-                </Button>
+                </McButton>
               </>
             ) : (
               <>
-                <Input
+                <McInput
                   label="Full Name"
                   type="text"
-                  icon={EMOJI.user}
                   placeholder="Enter your full name"
                   value={formData.full_name}
                   onChange={e => updateField('full_name', e.target.value)}
@@ -410,25 +419,25 @@ export default function Register({ onRegister }) {
                   gap: '1rem',
                   marginTop: '0.5rem'
                 }}>
-                  <Button
+                  <McButton
                     variant="outline"
                     onClick={() => setStep(1)}
                     style={{ flex: 1, padding: '16px' }}
                   >
                     Back
-                  </Button>
-                  <Button
-                    variant="gradient"
+                  </McButton>
+                  <McButton
+                    variant="primary"
                     onClick={register}
                     loading={loading}
-                    style={{ flex: 2, padding: '16px' }}
+                    style={{ flex: 2, padding: '16px', background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)' }}
                   >
-                    {EMOJI.rocket} Create Account
-                  </Button>
+                    <ArrowRight size={18} /> Create Account
+                  </McButton>
                 </div>
               </>
             )}
-          </Card>
+          </McCard>
 
           <p style={{
             textAlign: 'center',
@@ -449,6 +458,27 @@ export default function Register({ onRegister }) {
               Sign In
             </a>
           </p>
+          {onDoctorRegister && (
+            <p style={{
+              textAlign: 'center',
+              marginTop: '0.75rem',
+              fontSize: '0.9rem',
+              color: 'var(--text-secondary)'
+            }}>
+              Are you a doctor?{' '}
+              <a 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); onDoctorRegister() }}
+                style={{ 
+                  color: 'var(--mc-primary-500, #2563EB)',
+                  fontWeight: 600,
+                  textDecoration: 'none'
+                }}
+              >
+                Register as Doctor
+              </a>
+            </p>
+          )}
         </div>
       </div>
 

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { connect, createLocalTracks } from 'twilio-video'
-import Card from './ui/Card'
-import Button from './ui/Button'
+import McCard from './ui-next/McCard'
+import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
 import { api } from '../api'
+import { Video, Phone, Mic, X, AlertCircle } from './ui/icons/Icon'
 
 export default function VideoCall({ consultationId, consultation, onEnd, isDoctor = false }) {
   const [room, setRoom] = useState(null)
@@ -307,7 +308,7 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
         position: 'relative'
       }}>
         {!isConnected ? (
-          <Card style={{
+          <McCard style={{
             padding: '3rem',
             textAlign: 'center',
             maxWidth: '500px',
@@ -337,23 +338,23 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
             )}
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <Button
+              <McButton
                 variant="primary"
                 onClick={connectToRoom}
                 disabled={isConnecting}
                 style={{ padding: '1rem 2rem' }}
               >
-                {isConnecting ? '⏳ Connecting...' : `📹 ${isDoctor ? 'Start Call' : 'Join Call'}`}
-              </Button>
-              <Button
+                {isConnecting ? 'Connecting...' : `${isDoctor ? 'Start Call' : 'Join Call'}`}
+              </McButton>
+              <McButton
                 variant="outline"
                 onClick={() => onEnd && onEnd(0)}
                 style={{ padding: '1rem 2rem' }}
               >
                 Cancel
-              </Button>
+              </McButton>
             </div>
-          </Card>
+          </McCard>
         ) : (
           <>
             {/* Remote Video (Large) */}

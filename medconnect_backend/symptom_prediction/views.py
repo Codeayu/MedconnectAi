@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-
+from accounts.permissions import IsPatient
 from .vectorizer import build_symptom_vector
 from .predictor import predict_top_diseases
 from doctor_matching.matching_engine import recommend_doctors_from_db
@@ -13,7 +13,8 @@ LOW_CONFIDENCE_THRESHOLD = 0.4
 
 
 class PredictAndRecommendView(APIView):
-    permission_classes = [IsAuthenticated]
+    """AI Symptom Checker — patient-only endpoint."""
+    permission_classes = [IsAuthenticated, IsPatient]
 
     def post(self, request):
         selected_symptoms = request.data.get("symptoms")

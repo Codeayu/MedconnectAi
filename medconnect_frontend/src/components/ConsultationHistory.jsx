@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
-import Card from './ui/Card'
+import McCard from './ui-next/McCard'
 import Badge from './ui/Badge'
-import Button from './ui/Button'
+import McButton from './ui-next/McButton'
 import { api } from '../api'
+import { FileText, Clock, CheckCircle, Calendar, UserDoctor, BarChart, AlertCircle, MessageCircle } from './ui/icons/Icon'
 
 export default function ConsultationHistory({ onBack }) {
   const [consultations, setConsultations] = useState([])
@@ -34,11 +35,11 @@ export default function ConsultationHistory({ onBack }) {
   }
 
   const statusIcons = {
-    REQUESTED: '🔔',
-    ASSIGNED: '👨‍⚕️',
-    ONGOING: '🏥',
-    COMPLETED: '✅',
-    CANCELLED: '❌'
+    REQUESTED: AlertCircle,
+    ASSIGNED: UserDoctor,
+    ONGOING: BarChart,
+    COMPLETED: CheckCircle,
+    CANCELLED: AlertCircle
   }
 
   function formatDate(dateString) {
@@ -59,13 +60,13 @@ export default function ConsultationHistory({ onBack }) {
     }}>
       <div className="container" style={{ maxWidth: '1000px' }}>
         {onBack && (
-          <Button 
+          <McButton 
             variant="outline" 
             onClick={onBack}
             style={{ marginBottom: '2rem' }}
           >
             ← Back to Dashboard
-          </Button>
+          </McButton>
         )}
 
         <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -73,7 +74,7 @@ export default function ConsultationHistory({ onBack }) {
             width: '70px',
             height: '70px',
             margin: '0 auto 1.5rem',
-            background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+            background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
             borderRadius: '16px',
             display: 'flex',
             alignItems: 'center',
@@ -81,7 +82,7 @@ export default function ConsultationHistory({ onBack }) {
             fontSize: '2rem',
             boxShadow: '0 4px 20px rgba(0, 102, 204, 0.25)'
           }}>
-            📋
+            <FileText size={32} color="white" />
           </div>
           <h2 style={{ marginBottom: '0.5rem', fontSize: '2.5rem' }}>
             My Consultations
@@ -92,29 +93,35 @@ export default function ConsultationHistory({ onBack }) {
         </div>
         
         {loading ? (
-          <Card style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⏳</div>
+          <McCard style={{ textAlign: 'center', padding: '3rem' }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--mc-neutral-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <Clock size={24} color="var(--mc-neutral-400)" />
+            </div>
             <p style={{ fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
               Loading consultations...
             </p>
-          </Card>
+          </McCard>
         ) : error ? (
-          <Card style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+          <McCard style={{ textAlign: 'center', padding: '3rem' }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#FFEBEE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <AlertCircle size={24} color="#C62828" />
+            </div>
             <h3 style={{ marginBottom: '0.5rem', color: 'var(--error)' }}>
               {error}
             </h3>
-            <Button 
+            <McButton 
               variant="primary" 
               onClick={fetchConsultations}
               style={{ marginTop: '1rem' }}
             >
               Retry
-            </Button>
-          </Card>
+            </McButton>
+          </McCard>
         ) : consultations.length === 0 ? (
-          <Card style={{ textAlign: 'center', padding: '3rem' }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🏥</div>
+          <McCard style={{ textAlign: 'center', padding: '3rem' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--mc-neutral-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+              <FileText size={28} color="var(--mc-neutral-400)" />
+            </div>
             <h3 style={{ marginBottom: '1rem' }}>No Consultations Yet</h3>
             <p style={{ 
               fontSize: '1.05rem',
@@ -125,33 +132,37 @@ export default function ConsultationHistory({ onBack }) {
             }}>
               Start your health journey by checking your symptoms with our AI-powered tool
             </p>
-            <Button 
+            <McButton 
               variant="primary"
               onClick={onBack}
             >
-              🤖 Check Symptoms Now
-            </Button>
-          </Card>
+              Check Symptoms Now
+            </McButton>
+          </McCard>
         ) : (
           <>
             {/* Summary Stats */}
             <div className="grid grid-3" style={{ gap: '1rem', marginBottom: '2rem' }}>
-              <Card style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📊</div>
+              <McCard style={{ textAlign: 'center', padding: '1.5rem' }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--mc-primary-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem' }}>
+                  <BarChart size={20} color="var(--mc-primary-500)" />
+                </div>
                 <div style={{ 
                   fontSize: '1.75rem', 
                   fontWeight: 700,
-                  color: 'var(--primary)'
+                  color: 'var(--mc-primary-500)'
                 }}>
                   {consultations.length}
                 </div>
                 <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                   Total Consultations
                 </div>
-              </Card>
+              </McCard>
               
-              <Card style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>⏳</div>
+              <McCard style={{ textAlign: 'center', padding: '1.5rem' }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#FFF3E0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem' }}>
+                  <Clock size={20} color="#E65100" />
+                </div>
                 <div style={{ 
                   fontSize: '1.75rem', 
                   fontWeight: 700,
@@ -162,10 +173,12 @@ export default function ConsultationHistory({ onBack }) {
                 <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                   Pending
                 </div>
-              </Card>
+              </McCard>
               
-              <Card style={{ textAlign: 'center', padding: '1.5rem' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>✅</div>
+              <McCard style={{ textAlign: 'center', padding: '1.5rem' }}>
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#E8F5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.5rem' }}>
+                  <CheckCircle size={20} color="var(--mc-semantic-success)" />
+                </div>
                 <div style={{ 
                   fontSize: '1.75rem', 
                   fontWeight: 700,
@@ -176,13 +189,13 @@ export default function ConsultationHistory({ onBack }) {
                 <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                   Completed
                 </div>
-              </Card>
+              </McCard>
             </div>
 
             {/* Consultations List */}
             <div className="grid" style={{ gap: '1.25rem' }}>
               {consultations.map((consultation, index) => (
-                <Card 
+                <McCard 
                   key={consultation.id} 
                   hover
                   className="fade-in"
@@ -215,7 +228,8 @@ export default function ConsultationHistory({ onBack }) {
                           Consultation #{consultation.id}
                         </h3>
                         <Badge variant={statusColors[consultation.status]}>
-                          {statusIcons[consultation.status]} {consultation.status}
+                          {(() => { const IC = statusIcons[consultation.status]; return IC ? <IC size={14} /> : null; })()}
+                          {' '}{consultation.status}
                         </Badge>
                       </div>
                       <p style={{ 
@@ -223,7 +237,7 @@ export default function ConsultationHistory({ onBack }) {
                         color: 'var(--text-muted)',
                         fontSize: '0.95rem'
                       }}>
-                        📅 {formatDate(consultation.created_at)}
+                                              <Calendar size={14} /> {formatDate(consultation.created_at)}
                       </p>
                     </div>
                   </div>
@@ -240,9 +254,9 @@ export default function ConsultationHistory({ onBack }) {
                       <h4 style={{ 
                         fontSize: '1rem',
                         marginBottom: '0.75rem',
-                        color: 'var(--primary)'
+                        color: 'var(--mc-primary-500)'
                       }}>
-                        🤖 AI Analysis
+                        <BarChart size={16} /> AI Analysis
                       </h4>
                       <div style={{ 
                         display: 'flex',
@@ -271,7 +285,7 @@ export default function ConsultationHistory({ onBack }) {
                       border: '1px solid var(--success)'
                     }}>
                       <strong style={{ color: 'var(--success)' }}>
-                        👨‍⚕️ Assigned Doctor:
+                        <UserDoctor size={16} /> Assigned Doctor:
                       </strong> Dr. {consultation.doctor}
                     </div>
                   ) : (
@@ -283,7 +297,7 @@ export default function ConsultationHistory({ onBack }) {
                       border: '1px solid var(--warning)'
                     }}>
                       <strong style={{ color: 'var(--warning)' }}>
-                        ⏳ Awaiting Doctor Assignment
+                        <Clock size={16} /> Awaiting Doctor Assignment
                       </strong>
                     </div>
                   )}
@@ -296,16 +310,16 @@ export default function ConsultationHistory({ onBack }) {
                     paddingTop: '1.25rem',
                     borderTop: '1px solid var(--border)'
                   }}>
-                    <Button variant="outline" size="sm">
-                      📄 View Details
-                    </Button>
+                    <McButton variant="outline" size="sm">
+                      <FileText size={14} /> View Details
+                    </McButton>
                     {consultation.status === 'ASSIGNED' && (
-                      <Button variant="primary" size="sm">
-                        💬 Start Consultation
-                      </Button>
+                      <McButton variant="primary" size="sm">
+                        <MessageCircle size={14} /> Start Consultation
+                      </McButton>
                     )}
                   </div>
-                </Card>
+                </McCard>
               ))}
             </div>
           </>

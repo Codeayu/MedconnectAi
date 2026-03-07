@@ -1,24 +1,22 @@
 import { useState, useEffect } from 'react'
-import Card from './ui/Card'
-import Button from './ui/Button'
+import McCard from './ui-next/McCard'
+import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
 import { api } from '../api'
+import { UserDoctor, Star, Clock, Search, Filter, Calendar, CheckCircle, Video, Phone, MessageCircle, Stethoscope, X } from './ui/icons/Icon'
 
-const EMOJI = {
-  doctor: '👨‍⚕️',
-  star: '⭐',
-  clock: '🕐',
-  money: '💰',
-  online: '🟢',
-  offline: '⚫',
-  video: '📹',
-  chat: '💬',
-  phone: '📞',
-  person: '🏥',
-  search: '🔍',
-  filter: '🎯',
-  calendar: '📅',
-  check: '✅'
+const ICON_MAP = {
+  doctor: UserDoctor,
+  star: Star,
+  clock: Clock,
+  search: Search,
+  filter: Filter,
+  calendar: Calendar,
+  check: CheckCircle,
+  video: Video,
+  phone: Phone,
+  chat: MessageCircle,
+  person: Stethoscope
 }
 
 export default function DoctorList({ onBack, onBook }) {
@@ -150,22 +148,22 @@ export default function DoctorList({ onBack, onBook }) {
     <div style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header */}
       <section style={{
-        background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+        background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
         color: 'white',
         padding: '2rem 0'
       }}>
         <div className="container">
           {onBack && (
-            <Button 
+            <McButton 
               variant="outline" 
               onClick={onBack}
               style={{ marginBottom: '1rem', color: 'white', borderColor: 'rgba(255,255,255,0.5)' }}
             >
               ← Back to Dashboard
-            </Button>
+            </McButton>
           )}
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white' }}>
-            {EMOJI.doctor} Find a Doctor
+          <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'white', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <UserDoctor size={28} color="white" /> Find a Doctor
           </h1>
           <p style={{ opacity: 0.9, color: 'white' }}>
             Browse our network of verified healthcare professionals and book a consultation
@@ -185,21 +183,21 @@ export default function DoctorList({ onBack, onBook }) {
             alignItems: 'center',
             gap: '0.75rem'
           }}>
-            {EMOJI.check} {success}
+            <CheckCircle size={18} color="#4CAF50" /> {success}
           </div>
         </div>
       )}
 
       {/* Filters */}
       <div className="container" style={{ padding: '1.5rem 1rem' }}>
-        <Card style={{ padding: '1.5rem' }}>
+        <McCard style={{ padding: '1.5rem' }}>
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: '0.75rem',
             marginBottom: '1rem'
           }}>
-            <span style={{ fontSize: '1.25rem' }}>{EMOJI.filter}</span>
+            <Filter size={20} color="var(--mc-primary-500)" />
             <h3 style={{ margin: 0 }}>Filter Doctors</h3>
           </div>
 
@@ -210,8 +208,8 @@ export default function DoctorList({ onBack, onBook }) {
           }}>
             {/* Search */}
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: '500' }}>
-                {EMOJI.search} Search
+              <label style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Search size={14} /> Search
               </label>
               <input
                 type="text"
@@ -253,7 +251,7 @@ export default function DoctorList({ onBack, onBook }) {
             {/* Max Fee */}
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: '500' }}>
-                {EMOJI.money} Max Fee (₹)
+                Max Fee (₹)
               </label>
               <input
                 type="number"
@@ -271,8 +269,8 @@ export default function DoctorList({ onBack, onBook }) {
 
             {/* Min Rating */}
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: '500' }}>
-                {EMOJI.star} Min Rating
+              <label style={{ marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Star size={14} /> Min Rating
               </label>
               <select
                 value={filters.min_rating}
@@ -308,14 +306,14 @@ export default function DoctorList({ onBack, onBook }) {
                 onChange={e => setFilters({...filters, is_online: e.target.checked})}
                 style={{ width: '18px', height: '18px' }}
               />
-              <span>{EMOJI.online} Show only online doctors</span>
+              <span><span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', display: 'inline-block' }}></span> Show only online doctors</span>
             </label>
             
-            <Button variant="outline" size="sm" onClick={clearFilters}>
+            <McButton variant="outline" size="sm" onClick={clearFilters}>
               Clear Filters
-            </Button>
+            </McButton>
           </div>
-        </Card>
+        </McCard>
       </div>
 
       {/* Doctor List */}
@@ -326,13 +324,13 @@ export default function DoctorList({ onBack, onBook }) {
             <p style={{ marginTop: '1rem' }}>Loading doctors...</p>
           </div>
         ) : doctors.length === 0 ? (
-          <Card style={{ padding: '3rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔍</div>
+          <McCard style={{ padding: '3rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}><Search size={48} color="#9CA3AF" /></div>
             <h3>No doctors found</h3>
             <p style={{ color: 'var(--text-secondary)' }}>
               Try adjusting your filters or search criteria
             </p>
-          </Card>
+          </McCard>
         ) : (
           <>
             <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
@@ -345,10 +343,10 @@ export default function DoctorList({ onBack, onBook }) {
               gap: '1.5rem' 
             }}>
               {doctors.map(doctor => (
-                <Card key={doctor.id} hover style={{ overflow: 'hidden' }}>
+                <McCard key={doctor.id} hover style={{ overflow: 'hidden' }}>
                   {/* Card Header */}
                   <div style={{
-                    background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+                    background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
                     padding: '1.5rem',
                     color: 'white',
                     position: 'relative'
@@ -366,7 +364,7 @@ export default function DoctorList({ onBack, onBook }) {
                       borderRadius: '20px',
                       fontSize: '0.75rem'
                     }}>
-                      {doctor.is_online ? EMOJI.online : EMOJI.offline}
+                      {doctor.is_online ? <span style={{width:6,height:6,borderRadius:'50%',background:'#22C55E',display:'inline-block'}}/> : <span style={{width:6,height:6,borderRadius:'50%',background:'#6B7280',display:'inline-block'}}/>}
                       {doctor.is_online ? 'Online' : 'Offline'}
                     </div>
 
@@ -387,7 +385,7 @@ export default function DoctorList({ onBack, onBook }) {
                             alt={doctor.full_name}
                             style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                           />
-                        ) : EMOJI.doctor}
+                        ) : <UserDoctor size={28} color="white" />}
                       </div>
                       <div>
                         <h3 style={{ color: 'white', marginBottom: '0.25rem' }}>
@@ -417,7 +415,7 @@ export default function DoctorList({ onBack, onBook }) {
                           gap: '0.25rem',
                           color: '#FFB300'
                         }}>
-                          {EMOJI.star} {doctor.average_rating || 'N/A'}
+                          <Star size={16} color="#FFB300" /> {doctor.average_rating || 'N/A'}
                         </div>
                         <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                           ({doctor.total_reviews || 0} reviews)
@@ -456,19 +454,19 @@ export default function DoctorList({ onBack, onBook }) {
                       color: 'var(--text-secondary)',
                       marginBottom: '1rem'
                     }}>
-                      {EMOJI.check} {doctor.total_consultations || 0} consultations completed
+                      <CheckCircle size={16} color="#22C55E" /> {doctor.total_consultations || 0} consultations completed
                     </div>
 
                     {/* Book Button */}
-                    <Button 
+                    <McButton 
                       variant="primary" 
                       onClick={() => openBookingModal(doctor)}
-                      style={{ width: '100%' }}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}
                     >
-                      {EMOJI.calendar} Book Consultation
-                    </Button>
+                      <Calendar size={16} /> Book Consultation
+                    </McButton>
                   </div>
-                </Card>
+                </McCard>
               ))}
             </div>
           </>
@@ -490,7 +488,7 @@ export default function DoctorList({ onBack, onBook }) {
           }}
           onClick={() => setShowBookingModal(false)}
         >
-          <Card 
+          <McCard 
             style={{ 
               width: '100%', 
               maxWidth: '500px', 
@@ -512,12 +510,12 @@ export default function DoctorList({ onBack, onBook }) {
                 style={{
                   background: 'none',
                   border: 'none',
-                  fontSize: '1.5rem',
                   cursor: 'pointer',
-                  color: 'var(--text-muted)'
+                  color: 'var(--text-muted)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
               >
-                ✕
+                <X size={24} />
               </button>
             </div>
 
@@ -541,7 +539,7 @@ export default function DoctorList({ onBack, onBook }) {
                 justifyContent: 'center',
                 fontSize: '1.5rem'
               }}>
-                {EMOJI.doctor}
+                <UserDoctor size={24} color="var(--mc-primary-500)" />
               </div>
               <div>
                 <h4 style={{ marginBottom: '0.125rem' }}>Dr. {selectedDoctor.full_name}</h4>
@@ -578,10 +576,10 @@ export default function DoctorList({ onBack, onBook }) {
                 </label>
                 <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                   {[
-                    { value: 'VIDEO', label: 'Video Call', icon: EMOJI.video },
-                    { value: 'AUDIO', label: 'Audio Call', icon: EMOJI.phone },
-                    { value: 'CHAT', label: 'Chat', icon: EMOJI.chat },
-                    { value: 'IN_PERSON', label: 'In-Person', icon: EMOJI.person }
+                    { value: 'VIDEO', label: 'Video Call', IconComp: Video },
+                    { value: 'AUDIO', label: 'Audio Call', IconComp: Phone },
+                    { value: 'CHAT', label: 'Chat', IconComp: MessageCircle },
+                    { value: 'IN_PERSON', label: 'In-Person', IconComp: Stethoscope }
                   ].map(type => (
                     <button
                       key={type.value}
@@ -606,7 +604,7 @@ export default function DoctorList({ onBack, onBook }) {
                         transition: 'all 0.2s'
                       }}
                     >
-                      <span style={{ fontSize: '1.25rem' }}>{type.icon}</span>
+                      <span style={{ fontSize: '1.25rem' }}><type.IconComp size={20} /></span>
                       <span style={{ fontSize: '0.8rem' }}>{type.label}</span>
                     </button>
                   ))}
@@ -617,7 +615,7 @@ export default function DoctorList({ onBack, onBook }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                    {EMOJI.calendar} Date *
+                    <Calendar size={14} /> Date *
                   </label>
                   <input
                     type="date"
@@ -635,7 +633,7 @@ export default function DoctorList({ onBack, onBook }) {
                 </div>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-                    {EMOJI.clock} Time *
+                    <Clock size={14} /> Time *
                   </label>
                   <input
                     type="time"
@@ -691,16 +689,16 @@ export default function DoctorList({ onBack, onBook }) {
               </div>
 
               {/* Submit Button */}
-              <Button 
+              <McButton 
                 variant="primary"
                 onClick={handleBookConsultation}
                 disabled={bookingLoading}
-                style={{ width: '100%', marginTop: '0.5rem' }}
+                style={{ width: '100%', marginTop: '0.5rem', background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)' }}
               >
-                {bookingLoading ? 'Booking...' : `${EMOJI.check} Confirm Booking`}
-              </Button>
+                {bookingLoading ? 'Booking...' : 'Confirm Booking'}
+              </McButton>
             </div>
-          </Card>
+          </McCard>
         </div>
       )}
     </div>

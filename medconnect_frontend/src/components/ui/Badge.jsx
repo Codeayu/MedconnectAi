@@ -9,52 +9,57 @@ export default function Badge({
   style = {}
 }) {
   const sizes = {
-    sm: { padding: '4px 10px', fontSize: '0.7rem' },
-    md: { padding: '6px 14px', fontSize: '0.8rem' },
-    lg: { padding: '8px 18px', fontSize: '0.9rem' }
+    sm: { padding: '5px 12px', fontSize: '0.7rem' },
+    md: { padding: '7px 16px', fontSize: '0.8rem' },
+    lg: { padding: '10px 22px', fontSize: '0.875rem' }
   }
 
   const variants = {
     primary: {
-      background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 102, 204, 0.1) 100%)',
-      color: '#0066CC',
-      border: '1px solid rgba(0, 102, 204, 0.2)'
+      background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%)',
+      color: '#2563EB',
+      border: '1px solid rgba(37, 99, 235, 0.15)'
     },
     secondary: {
-      background: 'linear-gradient(135deg, rgba(0, 191, 165, 0.15) 0%, rgba(0, 191, 165, 0.1) 100%)',
-      color: '#00A391',
-      border: '1px solid rgba(0, 191, 165, 0.2)'
+      background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%)',
+      color: '#0891B2',
+      border: '1px solid rgba(6, 182, 212, 0.15)'
     },
     success: {
-      background: 'linear-gradient(135deg, rgba(0, 200, 83, 0.15) 0%, rgba(0, 200, 83, 0.1) 100%)',
-      color: '#00A854',
-      border: '1px solid rgba(0, 200, 83, 0.2)'
+      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(16, 185, 129, 0.08) 100%)',
+      color: '#059669',
+      border: '1px solid rgba(16, 185, 129, 0.15)'
     },
     warning: {
-      background: 'linear-gradient(135deg, rgba(255, 179, 0, 0.15) 0%, rgba(255, 179, 0, 0.1) 100%)',
-      color: '#CC8F00',
-      border: '1px solid rgba(255, 179, 0, 0.25)'
+      background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.08) 100%)',
+      color: '#D97706',
+      border: '1px solid rgba(245, 158, 11, 0.2)'
     },
     error: {
-      background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0.1) 100%)',
+      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(239, 68, 68, 0.08) 100%)',
       color: '#DC2626',
-      border: '1px solid rgba(220, 38, 38, 0.2)'
+      border: '1px solid rgba(239, 68, 68, 0.15)'
     },
     gradient: {
-      background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+      background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
       color: 'white',
       border: 'none'
     },
+    purple: {
+      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(124, 58, 237, 0.08) 100%)',
+      color: '#7C3AED',
+      border: '1px solid rgba(124, 58, 237, 0.15)'
+    },
     dark: {
-      background: 'linear-gradient(135deg, #1E293B 0%, #334155 100%)',
+      background: 'linear-gradient(135deg, #111827 0%, #1F2937 100%)',
       color: 'white',
       border: 'none'
     },
     glass: {
-      background: 'rgba(255, 255, 255, 0.2)',
-      backdropFilter: 'blur(10px)',
+      background: 'rgba(255, 255, 255, 0.15)',
+      backdropFilter: 'blur(12px)',
       color: 'white',
-      border: '1px solid rgba(255, 255, 255, 0.3)'
+      border: '1px solid rgba(255, 255, 255, 0.25)'
     }
   }
 
@@ -64,17 +69,17 @@ export default function Badge({
   const badgeStyle = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '7px',
     ...currentSize,
     ...currentVariant,
-    borderRadius: pill ? '50px' : '8px',
+    borderRadius: pill ? '100px' : '10px',
     fontWeight: 600,
-    letterSpacing: '0.02em',
+    letterSpacing: '0.03em',
     textTransform: 'uppercase',
     whiteSpace: 'nowrap',
-    transition: 'all 0.3s ease',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     ...(glow && {
-      boxShadow: `0 0 20px ${currentVariant.color}40`
+      boxShadow: `0 4px 20px ${currentVariant.color}30`
     }),
     ...style
   }

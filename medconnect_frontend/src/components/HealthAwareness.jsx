@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Card from './ui/Card';
-import Button from './ui/Button';
+import McCard from './ui-next/McCard';
+import McButton from './ui-next/McButton';
 import Badge from './ui/Badge';
+import { Heart, Shield, Activity, Pill, BookOpen, Ambulance, Phone, AlertCircle, CheckCircle, Video, Star, FileText, X, Clock, Stethoscope, Sparkles, BarChart, Info } from './ui/icons/Icon';
 
 // Education Topics Data
 const educationTopics = [
   {
     id: 'cpr',
     title: 'CPR & First Aid',
-    icon: '❤️',
+    IconComp: Heart,
     color: '#EF4444',
     gradient: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)',
     description: 'Learn life-saving techniques for emergency situations',
@@ -41,7 +41,7 @@ const educationTopics = [
   {
     id: 'maternal',
     title: 'Maternal Care',
-    icon: '🤰',
+    IconComp: Shield,
     color: '#A855F7',
     gradient: 'linear-gradient(135deg, #A855F7 0%, #EC4899 100%)',
     description: 'Essential information for pregnancy and postnatal care',
@@ -61,7 +61,7 @@ const educationTopics = [
   {
     id: 'child',
     title: 'Child Health',
-    icon: '👶',
+    IconComp: Activity,
     color: '#3B82F6',
     gradient: 'linear-gradient(135deg, #3B82F6 0%, #06B6D4 100%)',
     description: 'Complete guide to keeping children healthy',
@@ -81,7 +81,7 @@ const educationTopics = [
   {
     id: 'nutrition',
     title: 'Nutrition',
-    icon: '🍎',
+    IconComp: Activity,
     color: '#22C55E',
     gradient: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
     description: 'Healthy eating habits for all ages',
@@ -101,7 +101,7 @@ const educationTopics = [
   {
     id: 'hygiene',
     title: 'Hygiene',
-    icon: '💧',
+    IconComp: Shield,
     color: '#06B6D4',
     gradient: 'linear-gradient(135deg, #06B6D4 0%, #14B8A6 100%)',
     description: 'Personal and environmental hygiene practices',
@@ -121,7 +121,7 @@ const educationTopics = [
   {
     id: 'chronic',
     title: 'Chronic Diseases',
-    icon: '💊',
+    IconComp: Pill,
     color: '#F97316',
     gradient: 'linear-gradient(135deg, #F97316 0%, #F59E0B 100%)',
     description: 'Understanding and managing long-term health conditions',
@@ -280,16 +280,15 @@ const videoLibrary = [
 
 // Emergency Numbers
 const emergencyNumbers = [
-  { number: '112', label: 'National Emergency', icon: '🚨', color: '#EF4444', desc: 'Universal emergency helpline' },
-  { number: '102', label: 'Ambulance', icon: '🚑', color: '#3B82F6', desc: '24/7 emergency medical services' },
-  { number: '100', label: 'Police', icon: '👮', color: '#1E40AF', desc: 'Law enforcement assistance' },
-  { number: '101', label: 'Fire', icon: '🚒', color: '#F97316', desc: 'Fire and rescue services' },
-  { number: '104', label: 'Health Helpline', icon: '📞', color: '#22C55E', desc: 'Health advice and information' },
-  { number: '1098', label: 'Child Helpline', icon: '👶', color: '#A855F7', desc: 'Child protection services' }
+  { number: '112', label: 'National Emergency', IconComp: AlertCircle, color: '#EF4444', desc: 'Universal emergency helpline' },
+  { number: '102', label: 'Ambulance', IconComp: Ambulance, color: '#3B82F6', desc: '24/7 emergency medical services' },
+  { number: '100', label: 'Police', IconComp: Shield, color: '#1E40AF', desc: 'Law enforcement assistance' },
+  { number: '101', label: 'Fire', IconComp: AlertCircle, color: '#F97316', desc: 'Fire and rescue services' },
+  { number: '104', label: 'Health Helpline', IconComp: Phone, color: '#22C55E', desc: 'Health advice and information' },
+  { number: '1098', label: 'Child Helpline', IconComp: Heart, color: '#A855F7', desc: 'Child protection services' }
 ];
 
 export default function HealthAwareness({ onBack }) {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [expandedArticle, setExpandedArticle] = useState(null);
@@ -348,11 +347,11 @@ export default function HealthAwareness({ onBack }) {
     : videoLibrary.filter(v => v.category === videoCategory);
 
   const tabs = [
-    { id: 'overview', label: '📚 Overview', icon: '📚' },
-    { id: 'education', label: '🎓 Education', icon: '🎓' },
-    { id: 'quiz', label: '🎯 Health Quiz', icon: '🎯' },
-    { id: 'videos', label: '🎬 Videos', icon: '🎬' },
-    { id: 'emergency', label: '🚨 Emergency', icon: '🚨' }
+    { id: 'overview', label: 'Overview', IconComp: BookOpen },
+    { id: 'education', label: 'Education', IconComp: FileText },
+    { id: 'quiz', label: 'Health Quiz', IconComp: Star },
+    { id: 'videos', label: 'Videos', IconComp: Video },
+    { id: 'emergency', label: 'Emergency', IconComp: AlertCircle }
   ];
 
   return (
@@ -361,12 +360,12 @@ export default function HealthAwareness({ onBack }) {
       <div className="health-awareness-header">
         <div className="container">
           {onBack && (
-            <Button variant="outline" onClick={onBack} style={{ marginBottom: '1rem' }}>
+            <McButton variant="outline" onClick={onBack} style={{ marginBottom: '1rem' }}>
               ← Back to Dashboard
-            </Button>
+            </McButton>
           )}
           
-          <Badge variant="primary" icon="📖">Health Education</Badge>
+          <Badge variant="primary" icon={<BookOpen size={14} />}>Health Education</Badge>
           <h1 className="health-awareness-title">Health Awareness Hub</h1>
           <p className="health-awareness-subtitle">
             Your comprehensive resource for health education, emergency preparedness, and wellness knowledge
@@ -375,22 +374,22 @@ export default function HealthAwareness({ onBack }) {
           {/* Stats Row */}
           <div className="health-stats-row">
             <div className="health-stat-item">
-              <span className="health-stat-icon">📚</span>
+              <span className="health-stat-icon"><BookOpen size={20} color="var(--mc-primary-500)" /></span>
               <span className="health-stat-value">24+</span>
               <span className="health-stat-label">Health Topics</span>
             </div>
             <div className="health-stat-item">
-              <span className="health-stat-icon">🎬</span>
+              <span className="health-stat-icon"><Video size={20} color="var(--mc-primary-500)" /></span>
               <span className="health-stat-value">{videoLibrary.length}</span>
               <span className="health-stat-label">Video Tutorials</span>
             </div>
             <div className="health-stat-item">
-              <span className="health-stat-icon">🎯</span>
+              <span className="health-stat-icon"><Star size={20} color="var(--mc-primary-500)" /></span>
               <span className="health-stat-value">{quizQuestions.length}</span>
               <span className="health-stat-label">Quiz Questions</span>
             </div>
             <div className="health-stat-item">
-              <span className="health-stat-icon">🆘</span>
+              <span className="health-stat-icon"><AlertCircle size={20} color="var(--mc-primary-500)" /></span>
               <span className="health-stat-value">24/7</span>
               <span className="health-stat-label">Emergency Info</span>
             </div>
@@ -410,8 +409,8 @@ export default function HealthAwareness({ onBack }) {
                 setSelectedTopic(null);
               }}
             >
-              <span className="tab-icon">{tab.icon}</span>
-              <span className="tab-label">{tab.label.replace(tab.icon + ' ', '')}</span>
+              <span className="tab-icon"><tab.IconComp size={16} /></span>
+              <span className="tab-label">{tab.label}</span>
             </button>
           ))}
         </div>
@@ -424,10 +423,10 @@ export default function HealthAwareness({ onBack }) {
         {activeTab === 'overview' && (
           <div className="health-overview">
             {/* Quick Access Cards */}
-            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>🏥 Quick Access</h2>
+            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Stethoscope size={22} /> Quick Access</h2>
             <div className="health-quick-grid">
               {educationTopics.slice(0, 6).map((topic, index) => (
-                <Card 
+                <McCard 
                   key={topic.id}
                   hover
                   className="health-topic-card fade-in"
@@ -441,56 +440,56 @@ export default function HealthAwareness({ onBack }) {
                     className="topic-card-header"
                     style={{ background: topic.gradient }}
                   >
-                    <span className="topic-icon">{topic.icon}</span>
+                    <span className="topic-icon"><topic.IconComp size={28} color="white" /></span>
                   </div>
                   <div className="topic-card-body">
                     <h3>{topic.title}</h3>
                     <p>{topic.description}</p>
                     <div className="topic-meta">
-                      <span>📄 {topic.articles.length} articles</span>
-                      <span>✅ {topic.keyPoints.length} key points</span>
+                      <span><FileText size={14} /> {topic.articles.length} articles</span>
+                      <span><CheckCircle size={14} /> {topic.keyPoints.length} key points</span>
                     </div>
                   </div>
-                </Card>
+                </McCard>
               ))}
             </div>
 
             {/* Feature Highlights */}
             <div className="health-features-section">
-              <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>✨ Features</h2>
+              <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Sparkles size={22} /> Features</h2>
               <div className="health-features-grid">
-                <Card hover className="health-feature-card" onClick={() => setActiveTab('quiz')}>
-                  <div className="feature-icon" style={{ background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)' }}>
-                    🎯
+                <McCard hover className="health-feature-card" onClick={() => setActiveTab('quiz')}>
+                  <div className="feature-icon" style={{ background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)' }}>
+                    <Star size={28} color="white" />
                   </div>
                   <h3>Interactive Quiz</h3>
                   <p>Test your health knowledge with our interactive quiz and learn as you go</p>
-                  <Button variant="outline" size="sm">Take Quiz →</Button>
-                </Card>
+                  <McButton variant="outline" size="sm">Take Quiz →</McButton>
+                </McCard>
                 
-                <Card hover className="health-feature-card" onClick={() => setActiveTab('videos')}>
+                <McCard hover className="health-feature-card" onClick={() => setActiveTab('videos')}>
                   <div className="feature-icon" style={{ background: 'linear-gradient(135deg, #EF4444 0%, #F97316 100%)' }}>
-                    🎬
+                    <Video size={28} color="white" />
                   </div>
                   <h3>Video Library</h3>
                   <p>Watch expert-curated health education videos from trusted sources</p>
-                  <Button variant="outline" size="sm">Watch Videos →</Button>
-                </Card>
+                  <McButton variant="outline" size="sm">Watch Videos →</McButton>
+                </McCard>
                 
-                <Card hover className="health-feature-card" onClick={() => setActiveTab('emergency')}>
+                <McCard hover className="health-feature-card" onClick={() => setActiveTab('emergency')}>
                   <div className="feature-icon" style={{ background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)' }}>
-                    🚨
+                    <AlertCircle size={28} color="white" />
                   </div>
                   <h3>Emergency Guide</h3>
                   <p>Quick access to emergency numbers and first aid instructions</p>
-                  <Button variant="outline" size="sm">View Emergency →</Button>
-                </Card>
+                  <McButton variant="outline" size="sm">View Emergency →</McButton>
+                </McCard>
               </div>
             </div>
 
             {/* Emergency Quick Dial */}
             <div className="emergency-quick-section">
-              <h2 style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>🆘 Emergency Quick Dial</h2>
+              <h2 style={{ marginBottom: '1rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertCircle size={22} color="#EF4444" /> Emergency Quick Dial</h2>
               <div className="emergency-quick-grid">
                 {emergencyNumbers.slice(0, 4).map(em => (
                   <a 
@@ -499,7 +498,7 @@ export default function HealthAwareness({ onBack }) {
                     className="emergency-quick-card"
                     style={{ borderColor: em.color }}
                   >
-                    <span className="em-icon">{em.icon}</span>
+                    <span className="em-icon"><em.IconComp size={22} color={em.color} /></span>
                     <span className="em-number" style={{ color: em.color }}>{em.number}</span>
                     <span className="em-label">{em.label}</span>
                   </a>
@@ -514,10 +513,10 @@ export default function HealthAwareness({ onBack }) {
           <div className="health-education">
             {!selectedTopic ? (
               <>
-                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>🎓 Health Education Topics</h2>
+                <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FileText size={22} /> Health Education Topics</h2>
                 <div className="education-topics-grid">
                   {educationTopics.map((topic, index) => (
-                    <Card 
+                    <McCard 
                       key={topic.id}
                       hover
                       className="education-topic-card fade-in"
@@ -528,41 +527,41 @@ export default function HealthAwareness({ onBack }) {
                         className="education-topic-header"
                         style={{ background: topic.gradient }}
                       >
-                        <span className="education-topic-icon">{topic.icon}</span>
+                        <span className="education-topic-icon"><topic.IconComp size={32} color="white" /></span>
                         <h3>{topic.title}</h3>
                         <p>{topic.description}</p>
                       </div>
                       <div className="education-topic-content">
-                        <h4>📌 Key Points</h4>
+                        <h4><CheckCircle size={16} /> Key Points</h4>
                         <ul>
                           {topic.keyPoints.slice(0, 3).map((point, i) => (
                             <li key={i}>{point}</li>
                           ))}
                         </ul>
-                        <Button variant="primary" size="sm" style={{ marginTop: '1rem', width: '100%' }}>
+                        <McButton variant="primary" size="sm" style={{ marginTop: '1rem', width: '100%' }}>
                           Learn More →
-                        </Button>
+                        </McButton>
                       </div>
-                    </Card>
+                    </McCard>
                   ))}
                 </div>
               </>
             ) : (
               <div className="topic-detail">
-                <Button 
+                <McButton 
                   variant="outline" 
                   onClick={() => setSelectedTopic(null)}
                   style={{ marginBottom: '1.5rem' }}
                 >
                   ← Back to Topics
-                </Button>
+                </McButton>
                 
-                <Card className="topic-detail-card">
+                <McCard className="topic-detail-card">
                   <div 
                     className="topic-detail-header"
                     style={{ background: selectedTopic.gradient }}
                   >
-                    <span className="topic-detail-icon">{selectedTopic.icon}</span>
+                    <span className="topic-detail-icon"><selectedTopic.IconComp size={40} color="white" /></span>
                     <h2>{selectedTopic.title}</h2>
                     <p>{selectedTopic.description}</p>
                   </div>
@@ -571,7 +570,7 @@ export default function HealthAwareness({ onBack }) {
                     <div className="topic-detail-grid">
                       {/* Key Points Section */}
                       <div className="topic-key-points">
-                        <h3>✅ Key Points to Remember</h3>
+                        <h3><CheckCircle size={18} /> Key Points to Remember</h3>
                         <ul>
                           {selectedTopic.keyPoints.map((point, i) => (
                             <li key={i}>
@@ -584,7 +583,7 @@ export default function HealthAwareness({ onBack }) {
                       
                       {/* Articles Section */}
                       <div className="topic-articles">
-                        <h3>📄 Related Articles</h3>
+                        <h3><FileText size={18} /> Related Articles</h3>
                         <div className="articles-list">
                           {selectedTopic.articles.map((article, i) => (
                             <div 
@@ -593,7 +592,7 @@ export default function HealthAwareness({ onBack }) {
                               onClick={() => setExpandedArticle(expandedArticle === i ? null : i)}
                             >
                               <div className="article-header">
-                                <span className="article-icon">📖</span>
+                                <span className="article-icon"><BookOpen size={16} /></span>
                                 <div className="article-info">
                                   <h4>{article.title}</h4>
                                   <span className="article-duration">{article.duration}</span>
@@ -604,7 +603,7 @@ export default function HealthAwareness({ onBack }) {
                                 <div className="article-preview">
                                   <p>This article covers important information about {article.title.toLowerCase()}. 
                                   Learn best practices, common mistakes to avoid, and expert recommendations.</p>
-                                  <Button variant="outline" size="sm">Read Full Article</Button>
+                                  <McButton variant="outline" size="sm">Read Full Article</McButton>
                                 </div>
                               )}
                             </div>
@@ -616,12 +615,12 @@ export default function HealthAwareness({ onBack }) {
                     {/* Detailed Content */}
                     {selectedTopic.detailedContent && (
                       <div className="topic-detailed-content">
-                        <h3>📋 Detailed Guide</h3>
+                        <h3><FileText size={18} /> Detailed Guide</h3>
                         <div dangerouslySetInnerHTML={{ __html: selectedTopic.detailedContent }} />
                       </div>
                     )}
                   </div>
-                </Card>
+                </McCard>
               </div>
             )}
           </div>
@@ -630,39 +629,39 @@ export default function HealthAwareness({ onBack }) {
         {/* Quiz Tab */}
         {activeTab === 'quiz' && (
           <div className="health-quiz">
-            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>🎯 Health Knowledge Quiz</h2>
+            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Star size={22} /> Health Knowledge Quiz</h2>
             
             {quizState === 'idle' && (
-              <Card className="quiz-start-card">
+              <McCard className="quiz-start-card">
                 <div className="quiz-start-content">
-                  <div className="quiz-trophy">🏆</div>
+                  <div className="quiz-trophy"><Star size={48} color="#FFD700" /></div>
                   <h3>Test Your Health Knowledge</h3>
                   <p>Challenge yourself with questions about first aid, health, nutrition, and emergency preparedness!</p>
                   
                   <div className="quiz-info">
                     <div className="quiz-info-item">
-                      <span className="info-icon">❓</span>
+                      <span className="info-icon"><Info size={18} /></span>
                       <span>{quizQuestions.length} Questions</span>
                     </div>
                     <div className="quiz-info-item">
-                      <span className="info-icon">⏱️</span>
+                      <span className="info-icon"><Clock size={18} /></span>
                       <span>No Time Limit</span>
                     </div>
                     <div className="quiz-info-item">
-                      <span className="info-icon">📚</span>
+                      <span className="info-icon"><BookOpen size={18} /></span>
                       <span>Learn As You Go</span>
                     </div>
                   </div>
                   
-                  <Button variant="primary" size="lg" onClick={startQuiz}>
-                    🚀 Start Quiz
-                  </Button>
+                  <McButton variant="primary" size="lg" onClick={startQuiz}>
+                    Start Quiz
+                  </McButton>
                 </div>
-              </Card>
+              </McCard>
             )}
 
             {quizState === 'playing' && (
-              <Card className="quiz-playing-card">
+              <McCard className="quiz-playing-card">
                 {/* Progress */}
                 <div className="quiz-progress">
                   <div className="quiz-progress-bar">
@@ -724,16 +723,16 @@ export default function HealthAwareness({ onBack }) {
                       )}
                     </div>
                     <p>{quizQuestions[currentQuestion].explanation}</p>
-                    <Button variant="primary" onClick={nextQuestion}>
+                    <McButton variant="primary" onClick={nextQuestion}>
                       {currentQuestion < quizQuestions.length - 1 ? 'Next Question →' : 'See Results →'}
-                    </Button>
+                    </McButton>
                   </div>
                 )}
-              </Card>
+              </McCard>
             )}
 
             {quizState === 'result' && (
-              <Card className="quiz-result-card">
+              <McCard className="quiz-result-card">
                 <div className="quiz-result-content">
                   <div className="result-medal">
                     {score >= quizQuestions.length * 0.8 ? '🥇' : score >= quizQuestions.length * 0.5 ? '🥈' : '🥉'}
@@ -752,15 +751,15 @@ export default function HealthAwareness({ onBack }) {
                         : "Keep practicing! Every attempt makes you smarter! 📚"}
                   </p>
                   <div className="result-actions">
-                    <Button variant="primary" onClick={startQuiz}>
-                      🔄 Try Again
-                    </Button>
-                    <Button variant="outline" onClick={resetQuiz}>
+                    <McButton variant="primary" onClick={startQuiz}>
+                      Try Again
+                    </McButton>
+                    <McButton variant="outline" onClick={resetQuiz}>
                       ← Back to Start
-                    </Button>
+                    </McButton>
                   </div>
                 </div>
-              </Card>
+              </McCard>
             )}
           </div>
         )}
@@ -768,7 +767,7 @@ export default function HealthAwareness({ onBack }) {
         {/* Videos Tab */}
         {activeTab === 'videos' && (
           <div className="health-videos">
-            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>🎬 Health Video Library</h2>
+            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Video size={22} /> Health Video Library</h2>
             
             {/* Category Filter */}
             <div className="video-categories">
@@ -786,7 +785,7 @@ export default function HealthAwareness({ onBack }) {
             {/* Video Grid */}
             <div className="video-grid">
               {filteredVideos.map((video, index) => (
-                <Card 
+                <McCard 
                   key={video.id}
                   hover
                   className="video-card fade-in"
@@ -808,7 +807,7 @@ export default function HealthAwareness({ onBack }) {
                       <span>👁️ {video.views} views</span>
                     </div>
                   </div>
-                </Card>
+                </McCard>
               ))}
             </div>
 
@@ -816,7 +815,7 @@ export default function HealthAwareness({ onBack }) {
             {selectedVideo && (
               <div className="video-modal-overlay" onClick={() => setSelectedVideo(null)}>
                 <div className="video-modal" onClick={e => e.stopPropagation()}>
-                  <button className="video-modal-close" onClick={() => setSelectedVideo(null)}>✕</button>
+                  <button className="video-modal-close" onClick={() => setSelectedVideo(null)}><X size={20} /></button>
                   <h3>{selectedVideo.title}</h3>
                   <div className="video-iframe-container">
                     <iframe
@@ -837,18 +836,18 @@ export default function HealthAwareness({ onBack }) {
         {/* Emergency Tab */}
         {activeTab === 'emergency' && (
           <div className="health-emergency">
-            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>🚨 Emergency Services & Contacts</h2>
+            <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><AlertCircle size={22} color="#EF4444" /> Emergency Services & Contacts</h2>
             
             {/* Emergency Alert */}
-            <Card className="emergency-alert-card">
+            <McCard className="emergency-alert-card">
               <div className="emergency-alert-content">
-                <span className="alert-icon">⚠️</span>
+                <span className="alert-icon"><AlertCircle size={24} color="#F59E0B" /></span>
                 <div className="alert-text">
                   <h4>In Case of Emergency</h4>
                   <p>Stay calm, assess the situation, and call the appropriate emergency number immediately.</p>
                 </div>
               </div>
-            </Card>
+            </McCard>
 
             {/* Emergency Numbers Grid */}
             <div className="emergency-numbers-grid">
@@ -863,7 +862,7 @@ export default function HealthAwareness({ onBack }) {
                   }}
                 >
                   <div className="em-card-icon" style={{ background: `${em.color}15`, color: em.color }}>
-                    {em.icon}
+                    <em.IconComp size={24} color={em.color} />
                   </div>
                   <div className="em-card-info">
                     <h3 style={{ color: em.color }}>{em.number}</h3>
@@ -871,15 +870,15 @@ export default function HealthAwareness({ onBack }) {
                     <p>{em.desc}</p>
                   </div>
                   <div className="em-call-btn" style={{ background: em.color }}>
-                    📞 Call Now
+                    <Phone size={14} color="white" /> Call Now
                   </div>
                 </a>
               ))}
             </div>
 
             {/* First Aid Quick Reference */}
-            <Card className="first-aid-card">
-              <h3>🩹 First Aid Quick Reference</h3>
+            <McCard className="first-aid-card">
+              <h3><Stethoscope size={20} /> First Aid Quick Reference</h3>
               <div className="first-aid-grid">
                 <div className="first-aid-item">
                   <h4>🔥 Burns</h4>
@@ -914,7 +913,7 @@ export default function HealthAwareness({ onBack }) {
                   </ol>
                 </div>
               </div>
-            </Card>
+            </McCard>
           </div>
         )}
       </div>

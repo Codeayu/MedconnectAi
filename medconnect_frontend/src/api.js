@@ -18,6 +18,61 @@ async function handleResponse(response) {
   return data
 }
 
+// Auto-refresh: retry a request once after refreshing the access token
+let isRefreshing = false
+let refreshPromise = null
+
+async function refreshAccessToken() {
+  if (isRefreshing) return refreshPromise
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const refresh = localStorage.getItem("refresh")
+      if (!refresh) throw new Error("No refresh token")
+      const res = await fetch(`${API_BASE_URL}/api/auth/refresh/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh })
+      })
+      if (!res.ok) throw new Error("Refresh failed")
+      const data = await res.json()
+      localStorage.setItem("access", data.access)
+      if (data.refresh) localStorage.setItem("refresh", data.refresh)
+      return data.access
+    } catch {
+      // Refresh failed — clear auth
+      localStorage.removeItem("access")
+      localStorage.removeItem("refresh")
+      localStorage.removeItem("role")
+      localStorage.removeItem("user_id")
+      localStorage.removeItem("email")
+      localStorage.removeItem("user_name")
+      throw new Error("Session expired. Please log in again.")
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+  return refreshPromise
+}
+
+// Wrapper: makes a fetch, auto-refreshes token on 401, retries once
+async function authFetch(url, options = {}) {
+  let response = await fetch(url, options)
+  if (response.status === 401 && localStorage.getItem("refresh")) {
+    try {
+      const newToken = await refreshAccessToken()
+      // Rebuild headers with new token
+      const newHeaders = { ...options.headers }
+      newHeaders["Authorization"] = `Bearer ${newToken}`
+      response = await fetch(url, { ...options, headers: newHeaders })
+    } catch {
+      // refresh failed, return the original 401
+    }
+  }
+  return response
+}
+
 export const api = {
   // Auth
   async login(email, password) {
@@ -50,7 +105,7 @@ export const api = {
 
   // Patient Profile
   async getPatientProfile() {
-    const response = await fetch(`${API_BASE_URL}/api/patients/profile/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/patients/profile/`, {
       method: "GET",
       headers: getAuthHeaders()
     })
@@ -58,7 +113,7 @@ export const api = {
   },
 
   async updatePatientProfile(data) {
-    const response = await fetch(`${API_BASE_URL}/api/patients/profile/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/patients/profile/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
@@ -73,7 +128,7 @@ export const api = {
     if (file) formData.append("file", file)
 
     const token = localStorage.getItem("access")
-    const response = await fetch(`${API_BASE_URL}/api/chat/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/chat/`, {
       method: "POST",
       headers: {
         ...(token && { "Authorization": `Bearer ${token}` })
@@ -85,7 +140,7 @@ export const api = {
 
   // Symptom Prediction
   async predictSymptoms(symptoms) {
-    const response = await fetch(`${API_BASE_URL}/api/symptoms/predict-and-recommend/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/symptoms/predict-and-recommend/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ symptoms })
@@ -95,7 +150,7 @@ export const api = {
 
   // Consultations
   async createConsultation(aiPrediction) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/create/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/create/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ ai_prediction: aiPrediction })
@@ -104,7 +159,7 @@ export const api = {
   },
 
   async bookConsultation(data) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/book/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/book/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
@@ -116,7 +171,7 @@ export const api = {
     const url = status 
       ? `${API_BASE_URL}/api/consultations/patient/?status=${status}`
       : `${API_BASE_URL}/api/consultations/patient/`
-    const response = await fetch(url, {
+    const response = await authFetch(url, {
       method: "GET",
       headers: getAuthHeaders()
     })
@@ -127,7 +182,7 @@ export const api = {
     const url = status 
       ? `${API_BASE_URL}/api/consultations/doctor/?status=${status}`
       : `${API_BASE_URL}/api/consultations/doctor/`
-    const response = await fetch(url, {
+    const response = await authFetch(url, {
       method: "GET",
       headers: getAuthHeaders()
     })
@@ -135,7 +190,7 @@ export const api = {
   },
 
   async getConsultationDetail(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/${consultationId}/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/${consultationId}/`, {
       method: "GET",
       headers: getAuthHeaders()
     })
@@ -143,7 +198,7 @@ export const api = {
   },
 
   async acceptConsultation(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/${consultationId}/accept/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/${consultationId}/accept/`, {
       method: "POST",
       headers: getAuthHeaders()
     })
@@ -151,7 +206,7 @@ export const api = {
   },
 
   async rejectConsultation(consultationId, reason = '') {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/${consultationId}/reject/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/${consultationId}/reject/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ reason })
@@ -160,7 +215,7 @@ export const api = {
   },
 
   async startConsultation(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/${consultationId}/start/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/${consultationId}/start/`, {
       method: "POST",
       headers: getAuthHeaders()
     })
@@ -168,7 +223,7 @@ export const api = {
   },
 
   async updateConsultationStatus(consultationId, data) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/${consultationId}/update-status/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/${consultationId}/update-status/`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
@@ -177,7 +232,7 @@ export const api = {
   },
 
   async cancelConsultation(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/consultations/${consultationId}/cancel/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/consultations/${consultationId}/cancel/`, {
       method: "POST",
       headers: getAuthHeaders()
     })
@@ -219,7 +274,7 @@ export const api = {
 
   // Doctor's own profile & dashboard
   async getDoctorProfile() {
-    const response = await fetch(`${API_BASE_URL}/api/doctors/profile/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors/profile/`, {
       method: "GET",
       headers: getAuthHeaders()
     })
@@ -227,7 +282,7 @@ export const api = {
   },
 
   async updateDoctorProfile(data) {
-    const response = await fetch(`${API_BASE_URL}/api/doctors/profile/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors/profile/`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
@@ -236,7 +291,7 @@ export const api = {
   },
 
   async getDoctorDashboard() {
-    const response = await fetch(`${API_BASE_URL}/api/doctors/dashboard/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors/dashboard/`, {
       method: "GET",
       headers: getAuthHeaders()
     })
@@ -244,7 +299,7 @@ export const api = {
   },
 
   async updateOnlineStatus(isOnline) {
-    const response = await fetch(`${API_BASE_URL}/api/doctors/online-status/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors/online-status/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ is_online: isOnline })
@@ -264,7 +319,7 @@ export const api = {
 
   // Reviews
   async submitReview(doctorId, data) {
-    const response = await fetch(`${API_BASE_URL}/api/doctors/${doctorId}/review/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors/${doctorId}/review/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data)
@@ -274,7 +329,7 @@ export const api = {
 
   // Doctor Match (existing)
   async getDoctorMatch(symptoms) {
-    const response = await fetch(`${API_BASE_URL}/api/doctors-match/match/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors-match/match/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ symptoms })
@@ -285,7 +340,7 @@ export const api = {
   // ============ Video Call / Teleconsultation ============
   
   async createVideoRoom(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/video/create-room/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/video/create-room/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ consultation_id: consultationId })
@@ -294,7 +349,7 @@ export const api = {
   },
 
   async getVideoToken(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/video/get-token/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/video/get-token/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ consultation_id: consultationId })
@@ -303,7 +358,7 @@ export const api = {
   },
 
   async endVideoCall(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/video/end-call/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/video/end-call/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ consultation_id: consultationId })
@@ -312,7 +367,7 @@ export const api = {
   },
 
   async leaveVideoCall(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/video/leave/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/video/leave/`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ consultation_id: consultationId })
@@ -321,7 +376,7 @@ export const api = {
   },
 
   async getVideoRoomStatus(consultationId) {
-    const response = await fetch(`${API_BASE_URL}/api/video/status/${consultationId}/`, {
+    const response = await authFetch(`${API_BASE_URL}/api/video/status/${consultationId}/`, {
       method: "GET",
       headers: getAuthHeaders()
     })

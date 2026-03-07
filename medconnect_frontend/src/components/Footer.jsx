@@ -1,10 +1,4 @@
-const EMOJI = {
-  hospital: String.fromCodePoint(0x1F3E5),
-  pin: String.fromCodePoint(0x1F4CD),
-  envelope: String.fromCodePoint(0x2709, 0xFE0F),
-  phone: String.fromCodePoint(0x1F4DE),
-  copyright: String.fromCodePoint(0x00A9)
-}
+import { Stethoscope } from './ui/icons/Icon'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
@@ -34,14 +28,14 @@ export default function Footer() {
               <div style={{
                 width: '45px',
                 height: '45px',
-                background: 'linear-gradient(135deg, #0066CC 0%, #00BFA5 100%)',
+                background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
                 borderRadius: '12px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '1.5rem'
               }}>
-                {EMOJI.hospital}
+                <Stethoscope size={24} color="white" />
               </div>
               <div>
                 <h3 style={{
@@ -160,7 +154,7 @@ export default function Footer() {
                 color: 'rgba(255,255,255,0.7)',
                 fontSize: '0.9rem'
               }}>
-                <span>{EMOJI.pin}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                 Amravati, Maharashtra, India
               </div>
               <div style={{
@@ -170,7 +164,7 @@ export default function Footer() {
                 color: 'rgba(255,255,255,0.7)',
                 fontSize: '0.9rem'
               }}>
-                <span>{EMOJI.envelope}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 support@medconnect.ai
               </div>
               <div style={{
@@ -180,7 +174,7 @@ export default function Footer() {
                 color: 'rgba(255,255,255,0.7)',
                 fontSize: '0.9rem'
               }}>
-                <span>{EMOJI.phone}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                 +91 1800-XXX-XXXX
               </div>
             </div>
@@ -207,7 +201,7 @@ export default function Footer() {
             fontSize: '0.85rem',
             margin: 0
           }}>
-            {EMOJI.copyright} {currentYear} MedConnect AI. All rights reserved.
+            &copy; {currentYear} MedConnect AI. All rights reserved.
           </p>
           
           <div style={{
