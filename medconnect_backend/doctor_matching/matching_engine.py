@@ -8,6 +8,21 @@ DISEASE_MAP_PATH = BASE_DIR / "data/disease_to_specialist.json"
 with open(DISEASE_MAP_PATH, "r", encoding="utf-8") as f:
     DISEASE_MAP = json.load(f)
 
+# Reverse mapping: display name → DB key (e.g. "General Physician" → "GENERAL")
+SPEC_DISPLAY_TO_KEY = {display: key for key, display in DoctorProfile.SPECIALIZATION_CHOICES}
+
+
+def _resolve_spec_keys(display_names):
+    """Convert display names (from JSON) to DB keys, accepting both formats."""
+    keys = set()
+    valid_db_keys = {key for key, _ in DoctorProfile.SPECIALIZATION_CHOICES}
+    for name in display_names:
+        if name in valid_db_keys:
+            keys.add(name)
+        elif name in SPEC_DISPLAY_TO_KEY:
+            keys.add(SPEC_DISPLAY_TO_KEY[name])
+    return keys
+
 
 def recommend_doctors_from_db(ai_prediction, top_n=5):
     """
@@ -21,15 +36,20 @@ def recommend_doctors_from_db(ai_prediction, top_n=5):
     diseases = ai_prediction.get("top_diseases", [])
     confidences = ai_prediction.get("confidence", [])
 
-    # 1️⃣ Map diseases → specializations
-    specializations = set()
+    # 1️⃣ Map diseases → specializations (display names from JSON)
+    raw_specializations = set()
     for disease in diseases:
-        specializations.update(
+        raw_specializations.update(
             DISEASE_MAP.get(
                 disease,
                 DISEASE_MAP.get("_default", ["General Physician"])
             )
         )
+
+    # Convert display names to DB keys
+    specializations = _resolve_spec_keys(raw_specializations)
+    if not specializations:
+        return []
 
     # 2️⃣ Fetch doctors from DB
     doctors = DoctorProfile.objects.filter(
