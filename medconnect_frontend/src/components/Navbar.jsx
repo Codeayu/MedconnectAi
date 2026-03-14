@@ -28,7 +28,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
   }
   
   // Role-aware home page
-  const homePage = userRole === 'DOCTOR' ? 'doctor-dashboard' : (authenticated ? 'dashboard' : 'landing')
+  const homePage = userRole === 'DOCTOR' ? 'doctor-dashboard' : (userRole === 'LAB_PROVIDER' ? 'lab-provider-dashboard' : (authenticated ? 'dashboard' : 'landing'))
   
   return (
     <nav style={{
@@ -127,6 +127,10 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
                   { id: 'doctor-dashboard', label: 'Dashboard', Icon: Home },
                   { id: 'doctor-consultations', label: 'Patients', Icon: Calendar },
                   { id: 'chatbot', label: 'AI Chat', Icon: MessageCircle }
+                ]
+              : userRole === 'LAB_PROVIDER'
+              ? [
+                  { id: 'lab-provider-dashboard', label: 'Dashboard', Icon: Home },
                 ]
               : [
                   { id: 'dashboard', label: 'Dashboard', Icon: Home },
@@ -287,7 +291,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
                       textTransform: 'capitalize',
                       fontWeight: 500
                     }}>
-                      {userRole?.toLowerCase() || 'Patient'}
+                      {userRole === 'LAB_PROVIDER' ? 'Lab Provider' : userRole === 'DOCTOR' ? 'Doctor' : userRole?.toLowerCase() || 'Patient'}
                     </div>
                   </div>
                   
@@ -385,6 +389,10 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
                                 { icon: UserDoctor, label: 'My Profile', action: () => { onNavigate('profile'); setShowDropdown(false) } },
                                 { icon: Calendar, label: 'My Patients', action: () => { onNavigate('doctor-consultations'); setShowDropdown(false) } },
                                 { icon: BarChart, label: 'Dashboard', action: () => { onNavigate('doctor-dashboard'); setShowDropdown(false) } },
+                              ]
+                            : userRole === 'LAB_PROVIDER'
+                            ? [
+                                { icon: BarChart, label: 'Dashboard', action: () => { onNavigate('lab-provider-dashboard'); setShowDropdown(false) } },
                               ]
                             : [
                                 { icon: UserDoctor, label: 'My Profile', action: () => { onNavigate('profile'); setShowDropdown(false) } },

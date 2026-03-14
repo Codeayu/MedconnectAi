@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'patients',
     'consultations',
     'videocall',
+    'lab_tests',  # Lab Test Booking module
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -108,6 +109,8 @@ DATABASES = {
         }
     }
 }
+
+# SQLite for local development (uncomment if needed)
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -176,17 +179,38 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': False,
 }
 
+# CORS Configuration - Allow all origins in development
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
+    "http://127.0.0.1:5175",
 ]
 
 CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
     'authorization',
     'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
 ]
 
 AUTH_USER_MODEL = "accounts.User"

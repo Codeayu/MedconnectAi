@@ -327,6 +327,68 @@ export const FileText = svgWrapper(
   </>
 )
 
+export const ShoppingCart = svgWrapper(
+  <>
+    <circle cx="8" cy="21" r="1" />
+    <circle cx="19" cy="21" r="1" />
+    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+  </>
+)
+
+export const Building = svgWrapper(
+  <>
+    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+    <path d="M9 22v-4h6v4" />
+    <path d="M8 6h.01" /><path d="M16 6h.01" />
+    <path d="M12 6h.01" /><path d="M12 10h.01" />
+    <path d="M12 14h.01" /><path d="M16 10h.01" />
+    <path d="M16 14h.01" /><path d="M8 10h.01" />
+    <path d="M8 14h.01" />
+  </>
+)
+
+export const MapPin = svgWrapper(
+  <>
+    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+    <circle cx="12" cy="10" r="3" />
+  </>
+)
+
+export const Trash2 = svgWrapper(
+  <>
+    <path d="M3 6h18" />
+    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+    <line x1="10" y1="11" x2="10" y2="17" />
+    <line x1="14" y1="11" x2="14" y2="17" />
+  </>
+)
+
+export const CreditCard = svgWrapper(
+  <>
+    <rect width="20" height="14" x="2" y="5" rx="2" />
+    <line x1="2" y1="10" x2="22" y2="10" />
+  </>
+)
+
+export const Plus = svgWrapper(
+  <>
+    <path d="M5 12h14" />
+    <path d="M12 5v14" />
+  </>
+)
+
+export const Minus = svgWrapper(
+  <path d="M5 12h14" />
+)
+
+export const User = svgWrapper(
+  <>
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </>
+)
+
 /* ----------------------------------------------------------------
    ICON MAP — for <Icon name="..." /> lookup
    ---------------------------------------------------------------- */
@@ -374,6 +436,14 @@ const iconMap = {
   image: Image,
   mic: Mic,
   'file-text': FileText,
+  'shopping-cart': ShoppingCart,
+  building: Building,
+  'map-pin': MapPin,
+  trash2: Trash2,
+  'credit-card': CreditCard,
+  plus: Plus,
+  minus: Minus,
+  user: User,
 }
 
 /**

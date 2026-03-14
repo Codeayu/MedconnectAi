@@ -41,5 +41,8 @@ urlpatterns = [
     
     # Chatbot API
     path("api/chat/", include("chatbot.urls")),
+    
+    # Lab Test Booking APIs
+    path("api/lab-tests/", include("lab_tests.urls")),
 ]
 

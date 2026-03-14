@@ -11,11 +11,14 @@ import HealthAwareness from "./components/HealthAwareness"
 import DoctorDashboard from "./components/DoctorDashboard"
 import DoctorList from "./components/DoctorList"
 import DoctorRegister from "./components/DoctorRegister"
+import LabProviderRegister from "./components/LabProviderRegister"
+import LabProviderDashboard from "./components/LabProviderDashboard"
 import PatientConsultations from "./components/PatientConsultations"
 import ConsultationHistory from "./components/ConsultationHistory"
 import Profile from "./components/Profile"
 import DesignShowcase from "./components/DesignShowcase"
 import ErrorBoundary from "./components/ErrorBoundary"
+import LabTestBooking from "./components/LabTestBooking"
 import McPageTransition from "./components/ui-next/McPageTransition"
 import { isAuthenticated, getUserRole, logout } from "./auth"
 import "./App.css"
@@ -41,6 +44,8 @@ export default function App() {
     setUserRole(role)
     if (role === 'DOCTOR') {
       setPage("doctor-dashboard")
+    } else if (role === 'LAB_PROVIDER') {
+      setPage("lab-provider-dashboard")
     } else {
       setPage("dashboard")
     }
@@ -55,14 +60,17 @@ export default function App() {
 
   // Helper: get the correct dashboard page name for current role
   const getDashboardPage = () => {
-    return userRole === 'DOCTOR' ? 'doctor-dashboard' : 'dashboard'
+    if (userRole === 'DOCTOR') return 'doctor-dashboard'
+    if (userRole === 'LAB_PROVIDER') return 'lab-provider-dashboard'
+    return 'dashboard'
   }
 
   // Shared login props — always include both registration links
   const loginProps = {
     onLogin: handlePostLogin,
     onRegister: () => setPage("register"),
-    onDoctorRegister: () => setPage("doctor-register")
+    onDoctorRegister: () => setPage("doctor-register"),
+    onLabProviderRegister: () => setPage("lab-provider-register")
   }
 
   // Protected route wrapper — redirects to login if not authenticated
@@ -111,6 +119,7 @@ export default function App() {
           <Register
             onRegister={() => setPage("login")}
             onDoctorRegister={() => setPage("doctor-register")}
+            onLabProviderRegister={() => setPage("lab-provider-register")}
           />
         )
 
@@ -122,6 +131,21 @@ export default function App() {
             onPatientRegister={() => setPage("register")}
           />
         )
+
+      case "lab-provider-register":
+        return (
+          <LabProviderRegister
+            onSuccess={() => setPage("login")}
+            onLogin={() => setPage("login")}
+            onPatientRegister={() => setPage("register")}
+            onDoctorRegister={() => setPage("doctor-register")}
+          />
+        )
+
+      case "lab-provider-dashboard":
+        return isAuthenticated() && userRole === 'LAB_PROVIDER'
+          ? <ErrorBoundary onReset={() => setPage("landing")}><LabProviderDashboard onNavigate={setPage} onLogout={handleLogout} /></ErrorBoundary>
+          : <Login {...loginProps} />
 
       case "dashboard":
         return renderDashboard()
@@ -154,6 +178,9 @@ export default function App() {
 
       case "lab":
         return Protected(WellnessHub, { onBack: () => setPage(getDashboardPage()), onNavigate: setPage })
+
+      case "lab-tests":
+        return Protected(LabTestBooking, { onBack: () => setPage(getDashboardPage()), onNavigate: setPage })
 
       case "chatbot":
         return Protected(Chatbot, { onBack: () => setPage(getDashboardPage()) })

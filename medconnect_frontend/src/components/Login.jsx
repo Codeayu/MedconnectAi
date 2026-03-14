@@ -3,9 +3,9 @@ import McButton from './ui-next/McButton'
 import McInput from './ui-next/McInput'
 import McCard from './ui-next/McCard'
 import Badge from './ui/Badge'
-import { Stethoscope, Shield, Sparkles, AlertCircle, ArrowRight, UserDoctor } from './ui/icons/Icon'
+import { Stethoscope, Shield, Sparkles, AlertCircle, ArrowRight, UserDoctor, Building } from './ui/icons/Icon'
 
-export default function Login({ onLogin, onRegister, onDoctorRegister }) {
+export default function Login({ onLogin, onRegister, onDoctorRegister, onLabProviderRegister }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -328,6 +328,25 @@ export default function Login({ onLogin, onRegister, onDoctorRegister }) {
                 }}
               >
                 <UserDoctor size={18} /> Register as Doctor
+              </McButton>
+            )}
+
+            {onLabProviderRegister && (
+              <McButton
+                variant="secondary"
+                onClick={onLabProviderRegister}
+                style={{ 
+                  width: '100%',
+                  padding: '16px',
+                  marginTop: '0.75rem',
+                  borderRadius: '14px',
+                  fontWeight: 600,
+                  display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center',
+                  background: 'linear-gradient(135deg, #7C3AED10, #2563EB10)',
+                  border: '1px solid #7C3AED30'
+                }}
+              >
+                <Building size={18} /> Register as Lab Provider
               </McButton>
             )}
           </McCard>

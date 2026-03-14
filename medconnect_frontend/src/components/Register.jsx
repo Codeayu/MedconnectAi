@@ -4,9 +4,9 @@ import McInput from './ui-next/McInput'
 import McCard from './ui-next/McCard'
 import Badge from './ui/Badge'
 import { api } from '../api'
-import { Stethoscope, CheckCircle, Shield, Heart, ArrowRight, AlertCircle } from './ui/icons/Icon'
+import { Stethoscope, CheckCircle, Shield, Heart, ArrowRight, AlertCircle, Building } from './ui/icons/Icon'
 
-export default function Register({ onRegister, onDoctorRegister }) {
+export default function Register({ onRegister, onDoctorRegister, onLabProviderRegister }) {
   const [formData, setFormData] = useState({
     email: "",
     phone: "",
@@ -476,6 +476,27 @@ export default function Register({ onRegister, onDoctorRegister }) {
                 }}
               >
                 Register as Doctor
+              </a>
+            </p>
+          )}
+          {onLabProviderRegister && (
+            <p style={{
+              textAlign: 'center',
+              marginTop: '0.5rem',
+              fontSize: '0.9rem',
+              color: 'var(--text-secondary)'
+            }}>
+              Own a lab?{' '}
+              <a 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); onLabProviderRegister() }}
+                style={{ 
+                  color: '#7C3AED',
+                  fontWeight: 600,
+                  textDecoration: 'none'
+                }}
+              >
+                Register as Lab Provider
               </a>
             </p>
           )}

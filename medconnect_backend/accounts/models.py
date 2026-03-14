@@ -33,7 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=15, unique=True)
 
     role = models.CharField(
-        max_length=10,
+        max_length=15,
         choices=UserRole.CHOICES,
         default=UserRole.PATIENT
     )

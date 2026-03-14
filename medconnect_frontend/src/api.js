@@ -381,6 +381,358 @@ export const api = {
       headers: getAuthHeaders()
     })
     return handleResponse(response)
+  },
+
+  // ============ Lab Test Booking APIs ============
+
+  // Categories
+  async getLabTestCategories() {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/categories/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Labs
+  async getLabs(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    const url = `${API_BASE_URL}/api/lab-tests/labs/${params ? '?' + params : ''}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getLabDetail(labId) {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/labs/${labId}/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getLabReviews(labId) {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/labs/${labId}/reviews/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Tests
+  async getLabTests(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    const url = `${API_BASE_URL}/api/lab-tests/tests/${params ? '?' + params : ''}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getLabTestDetail(testId) {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/tests/${testId}/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getPopularTests() {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/tests/popular/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Packages
+  async getLabTestPackages(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    const url = `${API_BASE_URL}/api/lab-tests/packages/${params ? '?' + params : ''}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getLabTestPackageDetail(packageId) {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/packages/${packageId}/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getFeaturedPackages() {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/packages/featured/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Cart
+  async getCart() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/cart/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async addToCart(data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/cart/add/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async removeFromCart(data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/cart/remove/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async clearCart() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/cart/clear/`, {
+      method: "POST",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Bookings
+  async getLabTestBookings(status = null) {
+    const params = status ? `?status=${status}` : ''
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/bookings/${params}`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async createLabTestBooking(bookingData) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/bookings/create/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(bookingData)
+    })
+    return handleResponse(response)
+  },
+
+  async getLabTestBookingDetail(bookingId) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/bookings/${bookingId}/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async cancelLabTestBooking(bookingId, data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/bookings/${bookingId}/cancel/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async rescheduleLabTestBooking(bookingId, data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/bookings/${bookingId}/reschedule/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async getBookingResults(bookingId) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/bookings/${bookingId}/results/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Reviews
+  async createLabReview(reviewData) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/reviews/create/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(reviewData)
+    })
+    return handleResponse(response)
+  },
+
+  // Dashboard
+  async getLabTestDashboard() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/dashboard/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // ============ Lab Provider APIs ============
+
+  // Lab Provider Registration
+  async registerLabProvider(data) {
+    const response = await fetch(`${API_BASE_URL}/api/lab-tests/provider/register/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Provider Profile
+  async getLabProviderProfile() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/profile/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async updateLabProviderProfile(data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/profile/`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Provider - Lab Details
+  async getLabProviderLabDetails() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/lab/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async updateLabProviderLabDetails(data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/lab/`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Provider - Test Offerings
+  async getLabProviderTestOfferings() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/offerings/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async addTestOffering(data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/offerings/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async updateTestOffering(offeringId, data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/offerings/${offeringId}/`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async deleteTestOffering(offeringId) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/offerings/${offeringId}/`, {
+      method: "DELETE",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Provider - Bookings Management
+  async getLabProviderBookings(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    const url = `${API_BASE_URL}/api/lab-tests/provider/bookings/${params ? '?' + params : ''}`
+    const response = await authFetch(url, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async getLabProviderBookingDetail(bookingId) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/bookings/${bookingId}/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  async updateLabProviderBookingStatus(bookingId, data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/bookings/${bookingId}/status/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  async addLabProviderBookingResult(bookingId, data) {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/bookings/${bookingId}/results/add/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data)
+    })
+    return handleResponse(response)
+  },
+
+  // Lab Provider Dashboard
+  async getLabProviderDashboard() {
+    const response = await authFetch(`${API_BASE_URL}/api/lab-tests/provider/dashboard/`, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // ============ Labs with Tests (User View) ============
+
+  // Get all labs with their test offerings
+  async getLabsWithTests(filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    const url = `${API_BASE_URL}/api/lab-tests/labs-with-tests/${params ? '?' + params : ''}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
+  // Get tests offered by a specific lab
+  async getLabTestsByLab(labId, filters = {}) {
+    const params = new URLSearchParams(filters).toString()
+    const url = `${API_BASE_URL}/api/lab-tests/labs/${labId}/tests/${params ? '?' + params : ''}`
+    const response = await fetch(url, {
+      method: "GET",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
   }
 }
 

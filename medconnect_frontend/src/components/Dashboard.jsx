@@ -37,6 +37,13 @@ export default function Dashboard({ onService }) {
       color: '#F97316'
     },
     {
+      IconComp: TestTube,
+      title: 'Lab Test Booking',
+      desc: 'Book diagnostic tests & health packages',
+      action: 'lab-tests',
+      color: '#2563EB'
+    },
+    {
       IconComp: BookOpen,
       title: 'Health Awareness',
       desc: 'Read health articles & tips',
@@ -59,14 +66,6 @@ export default function Dashboard({ onService }) {
       desc: 'Video call with specialists',
       action: 'consult',
       color: '#7C3AED',
-      premium: true
-    },
-    {
-      IconComp: TestTube,
-      title: 'Lab Tests',
-      desc: 'Book diagnostic tests',
-      action: 'lab',
-      color: '#2563EB',
       premium: true
     }
   ]
@@ -314,7 +313,7 @@ export default function Dashboard({ onService }) {
             }}><Star size={14} color="#D97706" /> Premium</Badge>
           </div>
 
-          <div className="grid grid-3">
+          <div className="grid grid-3" style={{ maxWidth: '400px' }}>
             {premiumServices.map((service, i) => (
               <McCard 
                 key={i}
