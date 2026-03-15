@@ -65,7 +65,7 @@ class ConsultationDetailSerializer(serializers.ModelSerializer):
         if obj.doctor:
             profile = getattr(obj.doctor, 'doctor_profile', None)
             if profile:
-                return f"Dr. {profile.full_name}"
+                return profile.full_name
             return obj.doctor.email
         return "Unassigned"
 

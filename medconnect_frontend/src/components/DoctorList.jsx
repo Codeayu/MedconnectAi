@@ -618,7 +618,7 @@ export default function DoctorList({ onBack, onBook }) {
                 <UserDoctor size={24} color="var(--mc-primary-500)" />
               </div>
               <div>
-                <h4 style={{ marginBottom: '0.125rem' }}>Dr. {selectedDoctor.full_name}</h4>
+                <h4 style={{ marginBottom: '0.125rem' }}>{selectedDoctor.full_name}</h4>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                   {selectedDoctor.specialization_display}
                 </span>

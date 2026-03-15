@@ -286,7 +286,7 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
               Video Consultation
             </h2>
             <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.9rem' }}>
-              {isDoctor ? `Patient: ${consultation?.patient_name || 'Patient'}` : `Dr. ${consultation?.doctor_name || 'Doctor'}`}
+              {isDoctor ? `Patient: ${consultation?.patient_name || 'Patient'}` : `${consultation?.doctor_name || 'Doctor'}`}
             </p>
           </div>
         </div>
