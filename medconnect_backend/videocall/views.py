@@ -272,6 +272,12 @@ class EndVideoCallView(APIView):
             details=f"Call ended by {'Doctor' if is_doctor else 'Patient'}. Duration: {video_room.duration_seconds}s"
         )
 
+        # Auto-complete consultation when the video call ends.
+        if consultation.status in ['ONGOING', 'CONFIRMED', 'PENDING']:
+            consultation.status = 'COMPLETED'
+            consultation.completed_at = timezone.now()
+            consultation.save(update_fields=['status', 'completed_at', 'updated_at'])
+
         return Response({
             "message": "Video call ended",
             "duration_seconds": video_room.duration_seconds

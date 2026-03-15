@@ -81,7 +81,13 @@ class PatientConsultationsView(APIView):
     def get(self, request):
         status_filter = request.query_params.get('status')
         
-        qs = Consultation.objects.filter(patient=request.user)
+        qs = Consultation.objects.filter(patient=request.user).select_related(
+            'patient',
+            'doctor',
+            'patient__patientprofile',
+            'doctor__doctor_profile',
+            'review',
+        )
         
         if status_filter:
             qs = qs.filter(status=status_filter)
@@ -98,7 +104,13 @@ class DoctorConsultationsView(APIView):
     def get(self, request):
         status_filter = request.query_params.get('status')
         
-        qs = Consultation.objects.filter(doctor=request.user)
+        qs = Consultation.objects.filter(doctor=request.user).select_related(
+            'patient',
+            'doctor',
+            'patient__patientprofile',
+            'doctor__doctor_profile',
+            'review',
+        )
         
         if status_filter:
             qs = qs.filter(status=status_filter)
@@ -115,7 +127,13 @@ class ConsultationDetailView(APIView):
     def get(self, request, consultation_id):
         try:
             # Check if user is patient or doctor of this consultation
-            consultation = Consultation.objects.get(id=consultation_id)
+            consultation = Consultation.objects.select_related(
+                'patient',
+                'doctor',
+                'patient__patientprofile',
+                'doctor__doctor_profile',
+                'review',
+            ).get(id=consultation_id)
             
             if consultation.patient != request.user and consultation.doctor != request.user:
                 return Response(

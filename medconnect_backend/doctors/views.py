@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.utils import timezone
-from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage
+from django.db.models import Q, Avg, Count
+from django.db.models.functions import Coalesce
 from accounts.permissions import IsAdmin, IsDoctor, IsPatient
 from doctors.models import DoctorProfile, DoctorReview
 from consultations.models import Consultation
@@ -97,9 +99,35 @@ class DoctorListView(APIView):
         min_rating = request.query_params.get('min_rating')
         max_fee = request.query_params.get('max_fee')
         search = request.query_params.get('search')
+        page = request.query_params.get('page', '1')
+        page_size = request.query_params.get('page_size', '12')
 
-        # Base queryset - only approved and active doctors
-        doctors = DoctorProfile.objects.filter(is_approved=True, is_active=True)
+        try:
+            page = max(int(page), 1)
+        except (TypeError, ValueError):
+            page = 1
+
+        try:
+            page_size = int(page_size)
+            # Keep page size bounded to protect DB and response time.
+            page_size = min(max(page_size, 1), 50)
+        except (TypeError, ValueError):
+            page_size = 12
+
+        # Base queryset - only approved and active doctors.
+        # Annotate aggregates once to avoid per-row computed queries in serializer.
+        doctors = DoctorProfile.objects.filter(
+            is_approved=True,
+            is_active=True
+        ).select_related('user').annotate(
+            avg_rating_annot=Coalesce(Avg('reviews__rating'), 0.0),
+            total_reviews_annot=Count('reviews', distinct=True),
+            total_consultations_annot=Count(
+                'user__doctor_consultations',
+                filter=Q(user__doctor_consultations__status='COMPLETED'),
+                distinct=True,
+            ),
+        )
 
         # Apply filters
         if specialization:
@@ -109,7 +137,16 @@ class DoctorListView(APIView):
             doctors = doctors.filter(is_online=True)
         
         if max_fee:
-            doctors = doctors.filter(consultation_fee__lte=int(max_fee))
+            try:
+                doctors = doctors.filter(consultation_fee__lte=int(max_fee))
+            except (TypeError, ValueError):
+                pass
+
+        if min_rating:
+            try:
+                doctors = doctors.filter(avg_rating_annot__gte=float(min_rating))
+            except (TypeError, ValueError):
+                pass
         
         if search:
             doctors = doctors.filter(
@@ -121,14 +158,24 @@ class DoctorListView(APIView):
         # Order by online status first, then by rating
         doctors = doctors.order_by('-is_online', '-experience_years')
 
-        serializer = DoctorListSerializer(doctors, many=True)
-        
-        # Filter by min_rating after serialization (since it's a property)
-        data = serializer.data
-        if min_rating:
-            data = [d for d in data if d['average_rating'] >= float(min_rating)]
+        paginator = Paginator(doctors, page_size)
+        try:
+            page_obj = paginator.page(page)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages if paginator.num_pages > 0 else 1)
 
-        return Response(data)
+        serializer = DoctorListSerializer(page_obj.object_list, many=True)
+        return Response({
+            "results": serializer.data,
+            "pagination": {
+                "page": page_obj.number,
+                "page_size": page_size,
+                "total_pages": paginator.num_pages,
+                "total_items": paginator.count,
+                "has_next": page_obj.has_next(),
+                "has_previous": page_obj.has_previous(),
+            },
+        })
 
 
 class DoctorDetailView(APIView):
@@ -204,18 +251,24 @@ class CreateReviewView(APIView):
     def post(self, request, doctor_id):
         try:
             doctor = DoctorProfile.objects.get(id=doctor_id)
-            
-            # Check if consultation exists and is completed
-            consultation_id = request.data.get('consultation')
-            if consultation_id:
-                consultation = Consultation.objects.get(
-                    id=consultation_id, 
-                    patient=request.user,
-                    doctor=doctor.user,
-                    status='COMPLETED'
+
+            serializer = CreateReviewSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            # Review must be tied to a completed consultation with this doctor.
+            consultation_id = serializer.validated_data.get('consultation')
+            if not consultation_id:
+                return Response(
+                    {"error": "consultation is required"},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
-            else:
-                consultation = None
+
+            consultation = Consultation.objects.get(
+                id=consultation_id.id,
+                patient=request.user,
+                doctor=doctor.user,
+                status='COMPLETED'
+            )
 
             # Check if review already exists
             if DoctorReview.objects.filter(
@@ -232,8 +285,8 @@ class CreateReviewView(APIView):
                 doctor=doctor,
                 patient=request.user,
                 consultation=consultation,
-                rating=request.data.get('rating'),
-                comment=request.data.get('comment', '')
+                rating=serializer.validated_data['rating'],
+                comment=serializer.validated_data.get('comment', '')
             )
             
             return Response(

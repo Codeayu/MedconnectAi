@@ -74,11 +74,26 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
 
 class DoctorListSerializer(serializers.ModelSerializer):
     """Serializer for listing doctors (patient view)"""
-    average_rating = serializers.ReadOnlyField()
-    total_reviews = serializers.ReadOnlyField()
-    total_consultations = serializers.ReadOnlyField()
+    average_rating = serializers.SerializerMethodField()
+    total_reviews = serializers.SerializerMethodField()
+    total_consultations = serializers.SerializerMethodField()
     specialization_display = serializers.CharField(source='get_specialization_display', read_only=True)
     user_id = serializers.IntegerField(source='user.id', read_only=True)
+
+    def get_average_rating(self, obj):
+        if hasattr(obj, 'avg_rating_annot'):
+            return round(float(obj.avg_rating_annot or 0), 1)
+        return obj.average_rating
+
+    def get_total_reviews(self, obj):
+        if hasattr(obj, 'total_reviews_annot'):
+            return int(obj.total_reviews_annot or 0)
+        return obj.total_reviews
+
+    def get_total_consultations(self, obj):
+        if hasattr(obj, 'total_consultations_annot'):
+            return int(obj.total_consultations_annot or 0)
+        return obj.total_consultations
 
     class Meta:
         model = DoctorProfile

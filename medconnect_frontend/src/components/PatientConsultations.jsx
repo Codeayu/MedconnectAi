@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import McCard from './ui-next/McCard'
 import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
@@ -28,16 +28,25 @@ export default function PatientConsultations({ onBack }) {
   const [error, setError] = useState('')
   const [activeTab, setActiveTab] = useState('all')
   const [selectedConsultation, setSelectedConsultation] = useState(null)
+  const [reviewPrompt, setReviewPrompt] = useState({ open: false, consultation: null, rating: 5, comment: '' })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const consultationsCacheRef = useRef({})
   
   // Video call state
   const [showVideoCall, setShowVideoCall] = useState(false)
   const [videoConsultation, setVideoConsultation] = useState(null)
 
   useEffect(() => {
-    loadConsultations()
+    loadConsultations(activeTab)
   }, [activeTab])
 
-  const loadConsultations = async () => {
+  const loadConsultations = async (tab = activeTab, forceRefresh = false) => {
+    if (!forceRefresh && consultationsCacheRef.current[tab]) {
+      setConsultations(consultationsCacheRef.current[tab])
+      setLoading(false)
+      return
+    }
+
     try {
       setLoading(true)
       const statusMap = {
@@ -47,8 +56,11 @@ export default function PatientConsultations({ onBack }) {
         'completed': 'COMPLETED',
         'all': null
       }
-      const data = await api.getPatientConsultations(statusMap[activeTab])
-      setConsultations(data)
+      const data = await api.getPatientConsultations(statusMap[tab])
+      consultationsCacheRef.current[tab] = data
+      if (tab === activeTab) {
+        setConsultations(data)
+      }
     } catch (err) {
       setError('Failed to load consultations')
       console.error(err)
@@ -62,7 +74,8 @@ export default function PatientConsultations({ onBack }) {
     
     try {
       await api.cancelConsultation(consultationId)
-      loadConsultations()
+      consultationsCacheRef.current = {}
+      loadConsultations(activeTab, true)
     } catch (err) {
       alert('Failed to cancel consultation')
     }
@@ -74,9 +87,48 @@ export default function PatientConsultations({ onBack }) {
   }
 
   const handleEndVideoCall = () => {
+    const endedConsultation = videoConsultation
     setShowVideoCall(false)
     setVideoConsultation(null)
-    loadConsultations()
+
+    if (
+      endedConsultation &&
+      endedConsultation.doctor_profile_id &&
+      !endedConsultation.is_reviewed
+    ) {
+      setReviewPrompt({
+        open: true,
+        consultation: endedConsultation,
+        rating: 5,
+        comment: ''
+      })
+    }
+
+    consultationsCacheRef.current = {}
+    loadConsultations(activeTab, true)
+  }
+
+  const handleSubmitReview = async () => {
+    const consultation = reviewPrompt.consultation
+    if (!consultation?.doctor_profile_id || !consultation?.id) return
+
+    try {
+      setReviewSubmitting(true)
+      await api.submitReview(consultation.doctor_profile_id, {
+        consultation: consultation.id,
+        rating: Number(reviewPrompt.rating),
+        comment: reviewPrompt.comment
+      })
+
+      setReviewPrompt({ open: false, consultation: null, rating: 5, comment: '' })
+      consultationsCacheRef.current = {}
+      await loadConsultations(activeTab, true)
+      alert('Thanks! Your review was submitted.')
+    } catch (err) {
+      alert(err.message || 'Failed to submit review')
+    } finally {
+      setReviewSubmitting(false)
+    }
   }
 
   const formatDate = (dateStr) => {
@@ -456,6 +508,78 @@ export default function PatientConsultations({ onBack }) {
               )}
               <McButton variant="outline" onClick={() => setSelectedConsultation(null)}>
                 Close
+              </McButton>
+            </div>
+          </McCard>
+        </div>
+      )}
+
+      {/* Post-Call Review Prompt */}
+      {reviewPrompt.open && reviewPrompt.consultation && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1200,
+            padding: '1rem'
+          }}
+          onClick={() => {
+            if (!reviewSubmitting) {
+              setReviewPrompt({ open: false, consultation: null, rating: 5, comment: '' })
+            }
+          }}
+        >
+          <McCard
+            style={{ maxWidth: '520px', width: '100%', padding: '1.5rem' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <h3 style={{ marginBottom: '0.5rem' }}>How was your video consultation?</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
+              Rate your experience with {reviewPrompt.consultation.doctor_name || 'the doctor'}
+            </p>
+
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
+              <label style={{ display: 'grid', gap: '0.35rem' }}>
+                Rating
+                <select
+                  value={reviewPrompt.rating}
+                  onChange={(e) => setReviewPrompt(prev => ({ ...prev, rating: e.target.value }))}
+                  style={{ padding: '0.7rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'white' }}
+                >
+                  <option value={5}>5 - Excellent</option>
+                  <option value={4}>4 - Good</option>
+                  <option value={3}>3 - Average</option>
+                  <option value={2}>2 - Poor</option>
+                  <option value={1}>1 - Very Poor</option>
+                </select>
+              </label>
+
+              <label style={{ display: 'grid', gap: '0.35rem' }}>
+                Comment (optional)
+                <textarea
+                  rows={3}
+                  value={reviewPrompt.comment}
+                  onChange={(e) => setReviewPrompt(prev => ({ ...prev, comment: e.target.value }))}
+                  placeholder="Tell us about your experience"
+                  style={{ padding: '0.7rem', borderRadius: '8px', border: '1px solid var(--border)' }}
+                />
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
+              <McButton
+                variant="outline"
+                onClick={() => setReviewPrompt({ open: false, consultation: null, rating: 5, comment: '' })}
+                disabled={reviewSubmitting}
+              >
+                Maybe Later
+              </McButton>
+              <McButton variant="primary" onClick={handleSubmitReview} disabled={reviewSubmitting}>
+                {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
               </McButton>
             </div>
           </McCard>

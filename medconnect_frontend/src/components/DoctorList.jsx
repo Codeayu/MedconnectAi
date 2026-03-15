@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import McCard from './ui-next/McCard'
 import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
@@ -22,6 +22,15 @@ const ICON_MAP = {
 export default function DoctorList({ onBack, onBook }) {
   const [doctors, setDoctors] = useState([])
   const [specializations, setSpecializations] = useState([])
+  const [pagination, setPagination] = useState({
+    page: 1,
+    page_size: 12,
+    total_pages: 1,
+    total_items: 0,
+    has_next: false,
+    has_previous: false
+  })
+  const [currentPage, setCurrentPage] = useState(1)
   const [selectedDoctor, setSelectedDoctor] = useState(null)
   const [showBookingModal, setShowBookingModal] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -45,18 +54,28 @@ export default function DoctorList({ onBack, onBook }) {
     scheduled_time: '',
     symptoms: ''
   })
+  const isInitialLoad = useRef(true)
 
   useEffect(() => {
     loadSpecializations()
-    loadDoctors()
   }, [])
 
   useEffect(() => {
+    setCurrentPage(1)
+  }, [filters])
+
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false
+      loadDoctors()
+      return
+    }
+
     const timer = setTimeout(() => {
       loadDoctors()
     }, 300)
     return () => clearTimeout(timer)
-  }, [filters])
+  }, [filters, currentPage])
 
   const loadSpecializations = async () => {
     try {
@@ -76,9 +95,33 @@ export default function DoctorList({ onBack, onBook }) {
       if (filters.min_rating) filterParams.min_rating = filters.min_rating
       if (filters.max_fee) filterParams.max_fee = filters.max_fee
       if (filters.search) filterParams.search = filters.search
+      filterParams.page = currentPage
+      filterParams.page_size = 12
       
       const data = await api.getDoctorsList(filterParams)
-      setDoctors(data)
+
+      if (Array.isArray(data)) {
+        // Backward compatibility if API returns plain list.
+        setDoctors(data)
+        setPagination({
+          page: 1,
+          page_size: data.length,
+          total_pages: 1,
+          total_items: data.length,
+          has_next: false,
+          has_previous: false
+        })
+      } else {
+        setDoctors(data.results || [])
+        setPagination(data.pagination || {
+          page: 1,
+          page_size: 12,
+          total_pages: 1,
+          total_items: 0,
+          has_next: false,
+          has_previous: false
+        })
+      }
     } catch (err) {
       setError('Failed to load doctors')
       console.error(err)
@@ -334,7 +377,7 @@ export default function DoctorList({ onBack, onBook }) {
         ) : (
           <>
             <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
-              Showing {doctors.length} doctor{doctors.length !== 1 ? 's' : ''}
+              Showing {doctors.length} of {pagination.total_items} doctor{pagination.total_items !== 1 ? 's' : ''}
             </p>
             
             <div style={{ 
@@ -389,7 +432,7 @@ export default function DoctorList({ onBack, onBook }) {
                       </div>
                       <div>
                         <h3 style={{ color: 'white', marginBottom: '0.25rem' }}>
-                          Dr. {doctor.full_name}
+                          {doctor.full_name}
                         </h3>
                         <span style={{ opacity: 0.9 }}>{doctor.specialization_display}</span>
                       </div>
@@ -469,6 +512,39 @@ export default function DoctorList({ onBack, onBook }) {
                 </McCard>
               ))}
             </div>
+
+            {pagination.total_pages > 1 && (
+              <div style={{
+                marginTop: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '1rem',
+                flexWrap: 'wrap'
+              }}>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  Page {pagination.page} of {pagination.total_pages}
+                </span>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <McButton
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.has_previous}
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  >
+                    Previous
+                  </McButton>
+                  <McButton
+                    variant="outline"
+                    size="sm"
+                    disabled={!pagination.has_next}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                  >
+                    Next
+                  </McButton>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

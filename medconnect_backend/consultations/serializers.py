@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Consultation
 from doctors.models import DoctorProfile
-from patients.models import PatientProfile
 
 
 class ConsultationCreateSerializer(serializers.ModelSerializer):
@@ -26,6 +25,7 @@ class ConsultationDetailSerializer(serializers.ModelSerializer):
     doctor_name = serializers.SerializerMethodField()
     doctor_specialization = serializers.SerializerMethodField()
     doctor_profile_id = serializers.SerializerMethodField()
+    is_reviewed = serializers.SerializerMethodField()
     consultation_type_display = serializers.CharField(source='get_consultation_type_display', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
 
@@ -35,6 +35,7 @@ class ConsultationDetailSerializer(serializers.ModelSerializer):
             'id', 'patient', 'doctor', 'patient_name', 'patient_email', 'patient_phone',
             'patient_age', 'patient_gender',
             'doctor_name', 'doctor_specialization', 'doctor_profile_id',
+            'is_reviewed',
             'consultation_type', 'consultation_type_display',
             'scheduled_date', 'scheduled_time',
             'symptoms', 'ai_prediction', 'diagnosis', 'prescription', 'notes',
@@ -43,11 +44,8 @@ class ConsultationDetailSerializer(serializers.ModelSerializer):
         ]
 
     def get_patient_name(self, obj):
-        try:
-            profile = PatientProfile.objects.get(user=obj.patient)
-            return profile.full_name
-        except PatientProfile.DoesNotExist:
-            return obj.patient.email
+        profile = getattr(obj.patient, 'patientprofile', None)
+        return profile.full_name if profile else obj.patient.email
 
     def get_patient_email(self, obj):
         return obj.patient.email
@@ -56,45 +54,39 @@ class ConsultationDetailSerializer(serializers.ModelSerializer):
         return obj.patient.phone
 
     def get_patient_age(self, obj):
-        try:
-            profile = PatientProfile.objects.get(user=obj.patient)
-            return profile.age
-        except PatientProfile.DoesNotExist:
-            return None
+        profile = getattr(obj.patient, 'patientprofile', None)
+        return profile.age if profile else None
 
     def get_patient_gender(self, obj):
-        try:
-            profile = PatientProfile.objects.get(user=obj.patient)
-            return profile.gender
-        except PatientProfile.DoesNotExist:
-            return None
+        profile = getattr(obj.patient, 'patientprofile', None)
+        return profile.gender if profile else None
 
     def get_doctor_name(self, obj):
         if obj.doctor:
-            try:
-                profile = DoctorProfile.objects.get(user=obj.doctor)
+            profile = getattr(obj.doctor, 'doctor_profile', None)
+            if profile:
                 return f"Dr. {profile.full_name}"
-            except DoctorProfile.DoesNotExist:
-                return obj.doctor.email
+            return obj.doctor.email
         return "Unassigned"
 
     def get_doctor_specialization(self, obj):
         if obj.doctor:
-            try:
-                profile = DoctorProfile.objects.get(user=obj.doctor)
+            profile = getattr(obj.doctor, 'doctor_profile', None)
+            if profile:
                 return profile.get_specialization_display()
-            except DoctorProfile.DoesNotExist:
-                return None
+            return None
         return None
 
     def get_doctor_profile_id(self, obj):
         if obj.doctor:
-            try:
-                profile = DoctorProfile.objects.get(user=obj.doctor)
+            profile = getattr(obj.doctor, 'doctor_profile', None)
+            if profile:
                 return profile.id
-            except DoctorProfile.DoesNotExist:
-                return None
+            return None
         return None
+
+    def get_is_reviewed(self, obj):
+        return hasattr(obj, 'review') and obj.review is not None
 
 
 class BookConsultationSerializer(serializers.Serializer):

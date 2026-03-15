@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import McCard from './ui-next/McCard'
 import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
@@ -16,6 +16,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+  const consultationsCacheRef = useRef({})
   
   // Video call state
   const [showVideoCall, setShowVideoCall] = useState(false)
@@ -33,7 +34,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   }, [])
 
   useEffect(() => {
-    loadConsultations()
+    loadConsultations(activeTab)
   }, [activeTab])
 
   const loadDashboard = async () => {
@@ -50,7 +51,12 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
     }
   }
 
-  const loadConsultations = async () => {
+  const loadConsultations = async (tab = activeTab, forceRefresh = false) => {
+    if (!forceRefresh && consultationsCacheRef.current[tab]) {
+      setConsultations(consultationsCacheRef.current[tab])
+      return
+    }
+
     try {
       const statusMap = {
         'pending': 'PENDING',
@@ -59,8 +65,11 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
         'completed': 'COMPLETED',
         'all': null
       }
-      const data = await api.getDoctorConsultations(statusMap[activeTab])
-      setConsultations(data)
+      const data = await api.getDoctorConsultations(statusMap[tab])
+      consultationsCacheRef.current[tab] = data
+      if (tab === activeTab) {
+        setConsultations(data)
+      }
     } catch (err) {
       console.error('Failed to load consultations:', err)
     }
@@ -80,7 +89,8 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
     try {
       setActionLoading(true)
       await api.acceptConsultation(consultationId)
-      loadConsultations()
+      consultationsCacheRef.current = {}
+      loadConsultations(activeTab, true)
       loadDashboard()
     } catch (err) {
       alert('Failed to accept consultation')
@@ -94,7 +104,8 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
     try {
       setActionLoading(true)
       await api.rejectConsultation(consultationId, reason || '')
-      loadConsultations()
+      consultationsCacheRef.current = {}
+      loadConsultations(activeTab, true)
       loadDashboard()
     } catch (err) {
       alert('Failed to reject consultation')
@@ -107,7 +118,8 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
     try {
       setActionLoading(true)
       await api.startConsultation(consultationId)
-      loadConsultations()
+      consultationsCacheRef.current = {}
+      loadConsultations(activeTab, true)
       loadDashboard()
     } catch (err) {
       alert('Failed to start consultation')
@@ -126,7 +138,8 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   const handleEndVideoCall = (duration) => {
     setShowVideoCall(false)
     setVideoConsultation(null)
-    loadConsultations()
+    consultationsCacheRef.current = {}
+    loadConsultations(activeTab, true)
     loadDashboard()
   }
 
@@ -139,7 +152,8 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
       })
       setSelectedConsultation(null)
       setPrescriptionForm({ diagnosis: '', prescription: '', notes: '' })
-      loadConsultations()
+      consultationsCacheRef.current = {}
+      loadConsultations(activeTab, true)
       loadDashboard()
     } catch (err) {
       alert('Failed to complete consultation')
@@ -238,7 +252,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
               </div>
               <div>
                 <h1 style={{ fontSize: '1.75rem', marginBottom: '0.25rem', color: 'white' }}>
-                  Dr. {profile.full_name || getUserName()}
+                   {profile.full_name || getUserName()}
                 </h1>
                 <p style={{ opacity: 0.9, color: 'white' }}>
                   {profile.specialization_display || 'Specialist'}
@@ -317,11 +331,11 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
           paddingBottom: '0.5rem'
         }}>
           {[
+            { id: 'all', label: 'All', IconComp: FileText },
             { id: 'pending', label: 'Pending', IconComp: Clock },
             { id: 'confirmed', label: 'Confirmed', IconComp: Calendar },
             { id: 'ongoing', label: 'Ongoing', IconComp: BarChart },
-            { id: 'completed', label: 'Completed', IconComp: CheckCircle },
-            { id: 'all', label: 'All', IconComp: FileText }
+            { id: 'completed', label: 'Completed', IconComp: CheckCircle }
           ].map(tab => (
             <button
               key={tab.id}

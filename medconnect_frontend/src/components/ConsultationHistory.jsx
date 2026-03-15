@@ -9,6 +9,8 @@ export default function ConsultationHistory({ onBack }) {
   const [consultations, setConsultations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [reviewDraft, setReviewDraft] = useState({ consultationId: null, doctorId: null, rating: 5, comment: '' })
+  const [reviewSubmitting, setReviewSubmitting] = useState(false)
 
   useEffect(() => {
     fetchConsultations()
@@ -27,19 +29,39 @@ export default function ConsultationHistory({ onBack }) {
   }
 
   const statusColors = {
-    REQUESTED: 'warning',
-    ASSIGNED: 'primary',
+    PENDING: 'warning',
+    CONFIRMED: 'primary',
     ONGOING: 'info',
     COMPLETED: 'success',
-    CANCELLED: 'error'
+    CANCELLED: 'error',
+    REJECTED: 'error'
   }
 
   const statusIcons = {
-    REQUESTED: AlertCircle,
-    ASSIGNED: UserDoctor,
+    PENDING: AlertCircle,
+    CONFIRMED: UserDoctor,
     ONGOING: BarChart,
     COMPLETED: CheckCircle,
-    CANCELLED: AlertCircle
+    CANCELLED: AlertCircle,
+    REJECTED: AlertCircle
+  }
+
+  async function submitReview() {
+    if (!reviewDraft.consultationId || !reviewDraft.doctorId) return
+    try {
+      setReviewSubmitting(true)
+      await api.submitReview(reviewDraft.doctorId, {
+        consultation: reviewDraft.consultationId,
+        rating: Number(reviewDraft.rating),
+        comment: reviewDraft.comment
+      })
+      setReviewDraft({ consultationId: null, doctorId: null, rating: 5, comment: '' })
+      await fetchConsultations()
+    } catch (err) {
+      setError(err.message || 'Failed to submit review')
+    } finally {
+      setReviewSubmitting(false)
+    }
   }
 
   function formatDate(dateString) {
@@ -286,7 +308,7 @@ export default function ConsultationHistory({ onBack }) {
                     }}>
                       <strong style={{ color: 'var(--success)' }}>
                         <UserDoctor size={16} /> Assigned Doctor:
-                      </strong> Dr. {consultation.doctor}
+                      </strong>  {consultation.doctor}
                     </div>
                   ) : (
                     <div style={{
@@ -313,9 +335,28 @@ export default function ConsultationHistory({ onBack }) {
                     <McButton variant="outline" size="sm">
                       <FileText size={14} /> View Details
                     </McButton>
-                    {consultation.status === 'ASSIGNED' && (
+                    {consultation.status === 'CONFIRMED' && (
                       <McButton variant="primary" size="sm">
                         <MessageCircle size={14} /> Start Consultation
+                      </McButton>
+                    )}
+                    {consultation.status === 'COMPLETED' && consultation.doctor_profile_id && !consultation.is_reviewed && (
+                      <McButton
+                        variant="primary"
+                        size="sm"
+                        onClick={() => setReviewDraft({
+                          consultationId: consultation.id,
+                          doctorId: consultation.doctor_profile_id,
+                          rating: 5,
+                          comment: ''
+                        })}
+                      >
+                        <CheckCircle size={14} /> Review Doctor
+                      </McButton>
+                    )}
+                    {consultation.status === 'COMPLETED' && consultation.is_reviewed && (
+                      <McButton variant="outline" size="sm" disabled>
+                        <CheckCircle size={14} /> Review Submitted
                       </McButton>
                     )}
                   </div>
@@ -323,6 +364,50 @@ export default function ConsultationHistory({ onBack }) {
               ))}
             </div>
           </>
+        )}
+
+        {reviewDraft.consultationId && (
+          <McCard style={{ marginTop: '1rem', padding: '1.25rem' }}>
+            <h3 style={{ marginBottom: '0.75rem' }}>Review Doctor</h3>
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
+              <label style={{ display: 'grid', gap: '0.35rem' }}>
+                Rating
+                <select
+                  value={reviewDraft.rating}
+                  onChange={(e) => setReviewDraft(prev => ({ ...prev, rating: e.target.value }))}
+                  style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--border)' }}
+                >
+                  <option value={5}>5 - Excellent</option>
+                  <option value={4}>4 - Good</option>
+                  <option value={3}>3 - Average</option>
+                  <option value={2}>2 - Poor</option>
+                  <option value={1}>1 - Very Poor</option>
+                </select>
+              </label>
+              <label style={{ display: 'grid', gap: '0.35rem' }}>
+                Comment (optional)
+                <textarea
+                  rows={3}
+                  value={reviewDraft.comment}
+                  onChange={(e) => setReviewDraft(prev => ({ ...prev, comment: e.target.value }))}
+                  style={{ padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--border)' }}
+                  placeholder="Share your experience"
+                />
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <McButton variant="primary" onClick={submitReview} disabled={reviewSubmitting}>
+                  {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                </McButton>
+                <McButton
+                  variant="outline"
+                  onClick={() => setReviewDraft({ consultationId: null, doctorId: null, rating: 5, comment: '' })}
+                  disabled={reviewSubmitting}
+                >
+                  Cancel
+                </McButton>
+              </div>
+            </div>
+          </McCard>
         )}
       </div>
     </div>

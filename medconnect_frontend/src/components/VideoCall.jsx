@@ -21,6 +21,7 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
   const remoteVideoRef = useRef(null)
   const localTracksRef = useRef([])
   const timerRef = useRef(null)
+  const hasEndedRef = useRef(false)
 
   // Check room status periodically
   useEffect(() => {
@@ -162,6 +163,10 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
       videoRoom.on('disconnected', (room, error) => {
         console.log('Disconnected from room:', error?.message)
         cleanup()
+        if (!hasEndedRef.current && onEnd) {
+          hasEndedRef.current = true
+          onEnd(callDuration)
+        }
       })
 
     } catch (err) {
@@ -198,7 +203,8 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
       console.error('Error ending call:', err)
     }
     cleanup()
-    if (onEnd) {
+    if (!hasEndedRef.current && onEnd) {
+      hasEndedRef.current = true
       onEnd(callDuration)
     }
   }
@@ -211,7 +217,8 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
       console.error('Error leaving call:', err)
     }
     cleanup()
-    if (onEnd) {
+    if (!hasEndedRef.current && onEnd) {
+      hasEndedRef.current = true
       onEnd(callDuration)
     }
   }
@@ -247,6 +254,7 @@ export default function VideoCall({ consultationId, consultation, onEnd, isDocto
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      hasEndedRef.current = true
       cleanup()
     }
   }, [])

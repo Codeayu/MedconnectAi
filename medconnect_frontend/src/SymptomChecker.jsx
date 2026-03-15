@@ -237,8 +237,21 @@ export default function SymptomChecker({ onBack, onNavigate }) {
   const [result, setResult] = useState(null)
   const [route, setRoute] = useState("diagnose")
   const [loading, setLoading] = useState(false)
-  const [bookingSuccess, setBookingSuccess] = useState(false)
+  const [bookingLoadingDoctorId, setBookingLoadingDoctorId] = useState(null)
+  const [bookedDoctors, setBookedDoctors] = useState({})
   const [hoveredDoctor, setHoveredDoctor] = useState(null)
+
+  function getDefaultSchedule() {
+    const now = new Date()
+    const scheduled = new Date(now.getTime() + 60 * 60 * 1000)
+    const scheduled_date = scheduled.toISOString().slice(0, 10)
+    const hh = String(scheduled.getHours()).padStart(2, '0')
+    const mm = String(scheduled.getMinutes()).padStart(2, '0')
+    return {
+      scheduled_date,
+      scheduled_time: `${hh}:${mm}`
+    }
+  }
 
   async function analyze() {
     if (symptoms.length === 0) return
@@ -247,6 +260,7 @@ export default function SymptomChecker({ onBack, onNavigate }) {
     try {
       const data = await api.predictSymptoms(symptoms)
       setResult(data)
+      setBookedDoctors({})
     } catch (error) {
       console.error('Error analyzing symptoms:', error)
       alert('Failed to analyze symptoms. Please try again.')
@@ -256,22 +270,36 @@ export default function SymptomChecker({ onBack, onNavigate }) {
   }
 
   async function bookConsultation(doctor) {
-    setLoading(true)
+    const doctorId = doctor?.doctor_id || doctor?.id
+    if (!doctorId) {
+      alert('Doctor information is incomplete. Please refresh and try again.')
+      return
+    }
+
+    const { scheduled_date, scheduled_time } = getDefaultSchedule()
+    setBookingLoadingDoctorId(doctorId)
     try {
-      const consultation = await api.createConsultation({
-        top_diseases: result.predictions.map(p => p.disease),
-        confidence: result.predictions.map(p => p.prob)
+      const consultation = await api.bookConsultation({
+        doctor_id: doctorId,
+        consultation_type: 'VIDEO',
+        scheduled_date,
+        scheduled_time,
+        symptoms: symptoms.join(', '),
+        ai_prediction: {
+          top_diseases: result.predictions.map(p => p.disease),
+          confidence: result.predictions.map(p => p.prob)
+        }
       })
-      
-      setBookingSuccess(true)
+
+      setBookedDoctors(prev => ({ ...prev, [doctorId]: true }))
       setTimeout(() => {
-        alert(`Consultation booked successfully! ID: ${consultation.id}`)
+        alert(`Consultation booked successfully with ${doctor.name}! ID: ${consultation.id}`)
       }, 500)
     } catch (error) {
       console.error('Error booking consultation:', error)
-      alert('Failed to book consultation. Please try again.')
+      alert(error.message || 'Failed to book consultation. Please try again.')
     } finally {
-      setLoading(false)
+      setBookingLoadingDoctorId(null)
     }
   }
 
@@ -344,6 +372,11 @@ export default function SymptomChecker({ onBack, onNavigate }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {result.recommended_doctors?.map((doc, i) => (
+              (() => {
+                const doctorId = doc.doctor_id || doc.id
+                const isBooked = Boolean(bookedDoctors[doctorId])
+                const isBooking = bookingLoadingDoctorId === doctorId
+                return (
               <div 
                 key={i}
                 style={{
@@ -421,7 +454,7 @@ export default function SymptomChecker({ onBack, onNavigate }) {
                         fontWeight: 600,
                         color: '#F57C00'
                       }}>
-                        ⭐ {doc.rating}
+                        ⭐ {doc.rating ?? 4.5}
                       </span>
                       <span style={{
                         display: 'inline-flex',
@@ -434,7 +467,7 @@ export default function SymptomChecker({ onBack, onNavigate }) {
                         fontWeight: 500,
                         color: 'var(--text-secondary)'
                       }}>
-                        💰 ₹{doc.consultation_fee}
+                        💰 ₹{doc.consultation_fee ?? doc.fee}
                       </span>
                       <span style={{
                         display: 'inline-flex',
@@ -454,10 +487,10 @@ export default function SymptomChecker({ onBack, onNavigate }) {
                   
                   <button 
                     onClick={() => bookConsultation(doc)}
-                    disabled={loading || bookingSuccess}
+                    disabled={loading || isBooking || isBooked}
                     style={{
                       padding: '1rem 2rem',
-                      background: bookingSuccess 
+                      background: isBooked 
                         ? 'linear-gradient(135deg, #00C853 0%, #00BFA5 100%)' 
                         : 'linear-gradient(135deg, #0066CC 0%, #0099FF 100%)',
                       color: 'white',
@@ -465,8 +498,8 @@ export default function SymptomChecker({ onBack, onNavigate }) {
                       borderRadius: '14px',
                       fontSize: '1rem',
                       fontWeight: 600,
-                      cursor: loading || bookingSuccess ? 'default' : 'pointer',
-                      opacity: loading ? 0.7 : 1,
+                      cursor: loading || isBooking || isBooked ? 'default' : 'pointer',
+                      opacity: isBooking ? 0.7 : 1,
                       transition: 'all 0.3s ease',
                       boxShadow: '0 8px 20px -5px rgba(0, 102, 204, 0.4)',
                       display: 'flex',
@@ -474,10 +507,12 @@ export default function SymptomChecker({ onBack, onNavigate }) {
                       gap: '0.5rem'
                     }}
                   >
-                    {bookingSuccess ? '✅ Booked!' : '📅 Book Now'}
+                    {isBooked ? '✅ Booked!' : isBooking ? 'Booking...' : '📅 Book Now'}
                   </button>
                 </div>
               </div>
+                )
+              })()
             ))}
           </div>
         </div>

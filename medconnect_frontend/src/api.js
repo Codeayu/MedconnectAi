@@ -247,6 +247,8 @@ export const api = {
     if (filters.min_rating) params.append('min_rating', filters.min_rating)
     if (filters.max_fee) params.append('max_fee', filters.max_fee)
     if (filters.search) params.append('search', filters.search)
+    if (filters.page) params.append('page', filters.page)
+    if (filters.page_size) params.append('page_size', filters.page_size)
     
     const url = `${API_BASE_URL}/api/doctors/list/?${params.toString()}`
     const response = await fetch(url, {
