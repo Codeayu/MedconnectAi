@@ -4,8 +4,38 @@ import McButton from './ui-next/McButton'
 import Badge from './ui/Badge'
 import VideoCall from './VideoCall'
 import { api } from '../api'
+import { API_BASE_URL } from '../config'
 import { getUserName, logout } from '../auth'
 import { UserDoctor, Star, Calendar, Clock, CheckCircle, Video, MessageCircle, Phone, BarChart, X, AlertCircle, FileText } from './ui/icons/Icon'
+
+const SOUND_PRESETS = {
+  soft: {
+    label: 'Soft',
+    type: 'sine',
+    frequency: 660,
+    attack: 0.04,
+    duration: 0.25,
+    volume: 0.08,
+  },
+  default: {
+    label: 'Default',
+    type: 'sine',
+    frequency: 880,
+    attack: 0.03,
+    duration: 0.35,
+    volume: 0.15,
+  },
+  urgent: {
+    label: 'Urgent',
+    type: 'triangle',
+    frequency: 1080,
+    attack: 0.02,
+    duration: 0.45,
+    volume: 0.2,
+  },
+}
+
+const SOUND_PRESET_ORDER = ['soft', 'default', 'urgent']
 
 export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   const [dashboardData, setDashboardData] = useState(null)
@@ -16,7 +46,12 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
+  const [soundEnabled, setSoundEnabled] = useState(true)
+  const [soundPreset, setSoundPreset] = useState('default')
   const consultationsCacheRef = useRef({})
+  const knownPendingIdsRef = useRef(new Set())
+  const pendingInitializedRef = useRef(false)
   
   // Video call state
   const [showVideoCall, setShowVideoCall] = useState(false)
@@ -36,6 +71,169 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   useEffect(() => {
     loadConsultations(activeTab)
   }, [activeTab])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      return
+    }
+
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {
+        // Ignore permission errors; in-app flow still works.
+      })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isOnline) {
+      return undefined
+    }
+
+    const heartbeatTimer = setInterval(() => {
+      api.sendDoctorHeartbeat().catch(() => {
+        // Keep UI responsive even if one heartbeat fails.
+      })
+    }, 45000)
+
+    return () => clearInterval(heartbeatTimer)
+  }, [isOnline])
+
+  const playAlertSound = () => {
+    if (!soundEnabled || typeof window === 'undefined') return
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext
+      if (!AudioCtx) return
+
+      const config = SOUND_PRESETS[soundPreset] || SOUND_PRESETS.default
+
+      const ctx = new AudioCtx()
+      const oscillator = ctx.createOscillator()
+      const gainNode = ctx.createGain()
+
+      oscillator.type = config.type
+      oscillator.frequency.setValueAtTime(config.frequency, ctx.currentTime)
+      gainNode.gain.setValueAtTime(0.0001, ctx.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(config.volume, ctx.currentTime + config.attack)
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + config.duration)
+
+      oscillator.connect(gainNode)
+      gainNode.connect(ctx.destination)
+      oscillator.start()
+      oscillator.stop(ctx.currentTime + config.duration)
+
+      oscillator.onended = () => {
+        if (ctx.state !== 'closed') {
+          ctx.close().catch(() => {})
+        }
+      }
+    } catch (err) {
+      console.error('Failed to play alert sound:', err)
+    }
+  }
+
+  const showConsultationNotification = (consultation) => {
+    if (!notificationsEnabled || typeof window === 'undefined' || !('Notification' in window)) return
+    if (Notification.permission !== 'granted') return
+
+    const patientName = consultation?.patient_name || 'Patient'
+    const consultationType = consultation?.consultation_type_display || 'Consultation'
+
+    try {
+      const notification = new Notification('New Consultation Request', {
+        body: `${patientName} requested a ${consultationType.toLowerCase()}.`,
+        tag: `consultation-${consultation.id}`,
+        renotify: true,
+      })
+
+      notification.onclick = () => {
+        window.focus()
+        setActiveTab('pending')
+      }
+    } catch (err) {
+      console.error('Failed to show browser notification:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (!isOnline) {
+      return undefined
+    }
+
+    let isMounted = true
+
+    const checkPendingConsultations = async () => {
+      try {
+        const pending = await api.getDoctorConsultations('PENDING')
+        if (!isMounted) return
+
+        const currentIds = new Set(pending.map(c => c.id))
+
+        if (!pendingInitializedRef.current) {
+          knownPendingIdsRef.current = currentIds
+          pendingInitializedRef.current = true
+        } else {
+          const newItems = pending.filter(c => !knownPendingIdsRef.current.has(c.id))
+          if (newItems.length > 0) {
+            playAlertSound()
+            showConsultationNotification(newItems[0])
+            loadDashboard()
+          }
+          knownPendingIdsRef.current = currentIds
+        }
+
+        consultationsCacheRef.current.pending = pending
+        if (activeTab === 'pending') {
+          setConsultations(pending)
+        }
+      } catch (err) {
+        console.error('Failed to check pending consultations:', err)
+      }
+    }
+
+    checkPendingConsultations()
+    const poller = setInterval(checkPendingConsultations, 20000)
+
+    return () => {
+      isMounted = false
+      clearInterval(poller)
+    }
+  }, [isOnline, activeTab, notificationsEnabled, soundEnabled, soundPreset])
+
+  const cycleSoundPreset = () => {
+    setSoundPreset(prev => {
+      const idx = SOUND_PRESET_ORDER.indexOf(prev)
+      const nextIdx = idx === -1 ? 0 : (idx + 1) % SOUND_PRESET_ORDER.length
+      return SOUND_PRESET_ORDER[nextIdx]
+    })
+  }
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const token = localStorage.getItem('access')
+      const role = localStorage.getItem('role')
+
+      if (!token || role !== 'DOCTOR' || !isOnline) return
+
+      fetch(`${API_BASE_URL}/api/doctors/online-status/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ is_online: false }),
+        keepalive: true,
+      }).catch(() => {
+        // Browser close request is best-effort.
+      })
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      handleBeforeUnload()
+    }
+  }, [isOnline])
 
   const loadDashboard = async () => {
     try {
@@ -162,7 +360,15 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
     }
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      if (isOnline) {
+        await api.updateOnlineStatus(false)
+      }
+    } catch (err) {
+      console.error('Failed to set offline during logout:', err)
+    }
+
     logout()
     onLogout()
   }
@@ -222,7 +428,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
   const { profile, stats } = dashboardData || { profile: {}, stats: {} }
 
   return (
-    <div style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
+    <div className="doctor-dashboard-page" style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header */}
       <section style={{
         background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-primary-700) 100%)',
@@ -230,14 +436,14 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
         padding: '2rem 0'
       }}>
         <div className="container">
-          <div style={{ 
+          <div className="doctor-dashboard-header-row" style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
             alignItems: 'center',
             flexWrap: 'wrap',
             gap: '1rem'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="doctor-dashboard-profile" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
               <div style={{
                 width: '70px',
                 height: '70px',
@@ -264,7 +470,55 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
               </div>
             </div>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="doctor-dashboard-controls" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <button
+                onClick={() => setNotificationsEnabled(prev => !prev)}
+                style={{
+                  padding: '0.5rem 0.9rem',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255,255,255,0.45)',
+                  background: notificationsEnabled ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.25)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+                title="Toggle desktop notifications"
+              >
+                {notificationsEnabled ? 'Alerts On' : 'Alerts Off'}
+              </button>
+
+              <button
+                onClick={() => setSoundEnabled(prev => !prev)}
+                style={{
+                  padding: '0.5rem 0.9rem',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255,255,255,0.45)',
+                  background: soundEnabled ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.25)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+                title="Toggle alert sound"
+              >
+                {soundEnabled ? 'Sound On' : 'Sound Off'}
+              </button>
+
+              <button
+                onClick={cycleSoundPreset}
+                style={{
+                  padding: '0.5rem 0.9rem',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255,255,255,0.45)',
+                  background: 'rgba(255,255,255,0.18)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+                title="Change alert sound preset"
+              >
+                Sound: {SOUND_PRESETS[soundPreset]?.label || 'Default'}
+              </button>
+
               <button
                 onClick={toggleOnlineStatus}
                 style={{
@@ -294,7 +548,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
 
       {/* Stats Cards */}
       <div className="container" style={{ marginTop: '-1.5rem', position: 'relative', zIndex: 1 }}>
-        <div style={{ 
+        <div className="doctor-dashboard-stats-grid" style={{ 
           display: 'grid', 
           gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', 
           gap: '1rem' 
@@ -319,7 +573,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
       </div>
 
       {/* Consultations Section */}
-      <div className="container" style={{ padding: '2rem 1rem' }}>
+      <div className="container doctor-dashboard-content" style={{ padding: '2rem 1rem' }}>
         <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><FileText size={22} /> Consultations</h2>
         
         {/* Tabs */}
@@ -377,7 +631,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {consultations.map(consultation => (
               <McCard key={consultation.id} hover style={{ padding: '1.5rem' }}>
-                <div style={{ 
+                <div className="doctor-consultation-row" style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
                   alignItems: 'flex-start',
@@ -385,7 +639,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
                   gap: '1rem'
                 }}>
                   {/* Patient Info */}
-                  <div style={{ flex: 1, minWidth: '200px' }}>
+                  <div className="doctor-consultation-patient" style={{ flex: 1, minWidth: '200px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
                       <div style={{
                         width: '45px',
@@ -422,7 +676,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
                   </div>
 
                   {/* Schedule & Status */}
-                  <div style={{ textAlign: 'right', minWidth: '150px' }}>
+                  <div className="doctor-consultation-schedule" style={{ textAlign: 'right', minWidth: '150px' }}>
                     {getStatusBadge(consultation.status)}
                     <div style={{ marginTop: '0.75rem', fontSize: '0.9rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.5rem' }}>
@@ -441,7 +695,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
                 </div>
 
                 {/* Action Buttons */}
-                <div style={{ 
+                <div className="doctor-consultation-actions" style={{ 
                   display: 'flex', 
                   gap: '0.75rem', 
                   marginTop: '1rem',
@@ -547,6 +801,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
           onClick={() => setSelectedConsultation(null)}
         >
           <McCard 
+            className="doctor-consultation-modal-card"
             style={{ 
               width: '100%', 
               maxWidth: '600px', 
@@ -586,7 +841,7 @@ export default function DoctorDashboard({ onNavigate, onLogout, initialTab }) {
               marginBottom: '1.5rem'
             }}>
               <h4 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><UserDoctor size={18} /> Patient Information</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              <div className="doctor-consultation-modal-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Name</span>
                   <p style={{ fontWeight: '500' }}>{selectedConsultation.patient_name}</p>

@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "./config"
+
 export function isAuthenticated() {
   return !!localStorage.getItem("access")
 }
@@ -23,6 +25,18 @@ export function getToken() {
 }
 
 export function logout() {
+  const refresh = localStorage.getItem("refresh")
+
+  if (refresh) {
+    fetch(`${API_BASE_URL}/api/auth/logout/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh })
+    }).catch(() => {
+      // Best-effort logout; local cleanup still happens below.
+    })
+  }
+
   localStorage.removeItem("access")
   localStorage.removeItem("refresh")
   localStorage.removeItem("role")

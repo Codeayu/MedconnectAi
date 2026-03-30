@@ -51,3 +51,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.email} ({self.role})"
+
+
+class RevokedRefreshToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="revoked_refresh_tokens")
+    jti = models.CharField(max_length=255, unique=True)
+    revoked_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-revoked_at"]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.jti}"

@@ -88,7 +88,7 @@ export default function Profile({ onNavigate, onBack }) {
   }
 
   return (
-    <div style={{
+    <div className="profile-page" style={{
       minHeight: 'calc(100vh - 80px)',
       background: 'var(--gray-50)',
       padding: '2rem 0'
@@ -113,7 +113,7 @@ export default function Profile({ onNavigate, onBack }) {
         {/* Profile Card */}
         <McCard style={{ marginBottom: '1.5rem' }}>
           {/* Profile Header */}
-          <div style={{
+          <div className="profile-header-row" style={{
             display: 'flex',
             alignItems: 'center',
             gap: '1.5rem',
@@ -171,7 +171,7 @@ export default function Profile({ onNavigate, onBack }) {
               </div>
             )}
 
-            <div style={{ 
+            <div className="profile-form-grid" style={{ 
               display: 'grid', 
               gridTemplateColumns: '1fr 1fr', 
               gap: '1.5rem',

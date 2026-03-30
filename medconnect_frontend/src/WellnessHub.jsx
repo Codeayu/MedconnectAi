@@ -107,12 +107,12 @@ export default function WellnessHub({ onBack, onNavigate }) {
   }
 
   return (
-    <div style={{
+    <div className="wellness-hub-page" style={{
       background: 'linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%)',
       minHeight: 'calc(100vh - 80px)'
     }}>
       {/* Hero Section */}
-      <section style={{
+      <section className="wellness-hub-hero" style={{
         background: 'linear-gradient(135deg, var(--mc-primary-500, #2563EB) 0%, var(--mc-secondary-500, #7C3AED) 100%)',
         color: 'white',
         padding: '3rem 0 4rem',
@@ -151,7 +151,7 @@ export default function WellnessHub({ onBack, onNavigate }) {
             </McButton>
           )}
 
-          <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
+          <div className="wellness-hub-hero-content" style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto' }}>
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
@@ -192,9 +192,9 @@ export default function WellnessHub({ onBack, onNavigate }) {
       </section>
 
       {/* Services Grid */}
-      <section style={{ padding: '3rem 0' }}>
+      <section className="wellness-hub-services-section" style={{ padding: '3rem 0' }}>
         <div className="container" style={{ maxWidth: '1200px' }}>
-          <div style={{
+          <div className="wellness-hub-services-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '1.5rem'
@@ -309,9 +309,9 @@ export default function WellnessHub({ onBack, onNavigate }) {
       </section>
 
       {/* Quick Stats */}
-      <section style={{ padding: '2rem 0 3rem' }}>
+      <section className="wellness-hub-stats-section" style={{ padding: '2rem 0 3rem' }}>
         <div className="container" style={{ maxWidth: '1200px' }}>
-          <div style={{
+          <div className="wellness-hub-stats-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
             gap: '1.5rem'
@@ -361,7 +361,7 @@ export default function WellnessHub({ onBack, onNavigate }) {
 
       {/* Premium CTA */}
       {!isDoctor && (
-        <section style={{ padding: '0 0 4rem' }}>
+        <section className="wellness-hub-cta-section" style={{ padding: '0 0 4rem' }}>
           <div className="container" style={{ maxWidth: '1200px' }}>
             <McCard style={{
               textAlign: 'center',
@@ -392,7 +392,7 @@ export default function WellnessHub({ onBack, onNavigate }) {
                   <Star size={28} color="white" />
                 </div>
 
-                <h3 style={{
+                <h3 className="wellness-hub-cta-title" style={{
                   marginBottom: '1rem',
                   color: 'white',
                   fontSize: '2rem',

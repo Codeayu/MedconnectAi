@@ -48,14 +48,52 @@ class BookConsultationView(APIView):
                     is_approved=True,
                     is_active=True
                 )
+
+                scheduled_date = serializer.validated_data['scheduled_date']
+                scheduled_time = serializer.validated_data['scheduled_time']
+
+                available_days = [d.strip() for d in (doctor_profile.available_days or '').split(',') if d.strip()]
+                if available_days:
+                    day_name = scheduled_date.strftime('%a')
+                    if day_name not in available_days:
+                        return Response(
+                            {"error": f"Doctor is not available on {day_name}."},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                if doctor_profile.available_from and doctor_profile.available_to:
+                    if not (doctor_profile.available_from <= scheduled_time <= doctor_profile.available_to):
+                        return Response(
+                            {
+                                "error": (
+                                    "Doctor is available between "
+                                    f"{doctor_profile.available_from.strftime('%H:%M')} and "
+                                    f"{doctor_profile.available_to.strftime('%H:%M')} only."
+                                )
+                            },
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+
+                # Prevent double-booking an active consultation at the same slot.
+                slot_conflict = Consultation.objects.filter(
+                    doctor=doctor_profile.user,
+                    scheduled_date=scheduled_date,
+                    scheduled_time=scheduled_time,
+                ).exclude(status__in=['CANCELLED', 'REJECTED']).exists()
+
+                if slot_conflict:
+                    return Response(
+                        {"error": "Selected slot is no longer available. Please choose another time."},
+                        status=status.HTTP_409_CONFLICT,
+                    )
                 
                 # Create consultation
                 consultation = Consultation.objects.create(
                     patient=request.user,
                     doctor=doctor_profile.user,
                     consultation_type=serializer.validated_data['consultation_type'],
-                    scheduled_date=serializer.validated_data['scheduled_date'],
-                    scheduled_time=serializer.validated_data['scheduled_time'],
+                    scheduled_date=scheduled_date,
+                    scheduled_time=scheduled_time,
                     symptoms=serializer.validated_data.get('symptoms', ''),
                     ai_prediction=serializer.validated_data.get('ai_prediction'),
                     fee=doctor_profile.consultation_fee,
@@ -158,6 +196,19 @@ class UpdateConsultationStatusView(APIView):
             serializer = UpdateConsultationStatusSerializer(data=request.data)
             if serializer.is_valid():
                 new_status = serializer.validated_data['status']
+
+                if consultation.status != 'ONGOING' and new_status == 'COMPLETED':
+                    return Response(
+                        {"error": "Only ongoing consultations can be completed."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if new_status != 'COMPLETED' and new_status != consultation.status:
+                    return Response(
+                        {"error": "This endpoint only supports completing an ongoing consultation."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
                 consultation.status = new_status
                 
                 if new_status == 'COMPLETED':

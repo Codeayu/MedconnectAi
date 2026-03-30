@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from datetime import timedelta
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Q, Avg, Count
@@ -88,11 +89,33 @@ class DoctorOnlineStatusView(APIView):
             return Response({"error": "Doctor profile not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
+class DoctorHeartbeatView(APIView):
+    """Keep doctor session alive while browser is active."""
+    permission_classes = [IsAuthenticated, IsDoctor]
+
+    def post(self, request):
+        try:
+            profile = DoctorProfile.objects.get(user=request.user)
+            profile.is_online = True
+            profile.last_seen = timezone.now()
+            profile.save(update_fields=['is_online', 'last_seen'])
+            return Response({
+                "is_online": profile.is_online,
+                "last_seen": profile.last_seen
+            })
+        except DoctorProfile.DoesNotExist:
+            return Response({"error": "Doctor profile not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
 class DoctorListView(APIView):
     """List all approved and active doctors for patients"""
     permission_classes = [AllowAny]
 
     def get(self, request):
+        # Auto-mark stale doctor sessions offline (no heartbeat for 2 minutes).
+        stale_cutoff = timezone.now() - timedelta(minutes=2)
+        DoctorProfile.objects.filter(is_online=True, last_seen__lt=stale_cutoff).update(is_online=False)
+
         # Filter parameters
         specialization = request.query_params.get('specialization')
         is_online = request.query_params.get('is_online')

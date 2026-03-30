@@ -31,7 +31,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
   const homePage = userRole === 'DOCTOR' ? 'doctor-dashboard' : (userRole === 'LAB_PROVIDER' ? 'lab-provider-dashboard' : (authenticated ? 'dashboard' : 'landing'))
   
   return (
-    <nav style={{
+    <nav className="mc-navbar" style={{
       background: 'rgba(255, 255, 255, 0.85)',
       backdropFilter: 'blur(20px)',
       WebkitBackdropFilter: 'blur(20px)',
@@ -42,13 +42,14 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
       zIndex: 1000,
       boxShadow: '0 4px 30px rgba(0, 0, 0, 0.03)'
     }}>
-      <div className="container" style={{
+      <div className="container mc-navbar-inner" style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
         {/* Logo */}
         <div 
+          className="mc-navbar-logo"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -114,7 +115,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
         
         {/* Center Navigation - Role-aware, always visible when authenticated */}
         {authenticated && (
-          <div style={{
+          <div className="mc-navbar-center" style={{
             display: 'flex',
             gap: '4px',
             background: 'linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%)',
@@ -171,7 +172,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
         )}
 
         {/* Right Side - Auth Controls */}
-        <div style={{
+        <div className="mc-navbar-right" style={{
           display: 'flex',
           gap: '0.75rem',
           alignItems: 'center'
@@ -182,7 +183,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
               {/* Theme Switcher */}
               <McThemeSwitcher compact />
               {/* Notifications */}
-              <button style={{
+              <button className="mc-navbar-notification" style={{
                 width: '44px',
                 height: '44px',
                 borderRadius: '12px',
@@ -226,6 +227,7 @@ export default function Navbar({ onNavigate, currentPage, onLogout: externalLogo
               {/* User Profile Dropdown */}
               <div style={{ position: 'relative' }}>
                 <button
+                  className="mc-navbar-profile-trigger"
                   onClick={() => setShowDropdown(!showDropdown)}
                   style={{
                     display: 'flex',

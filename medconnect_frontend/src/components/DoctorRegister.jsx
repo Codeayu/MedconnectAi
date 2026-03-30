@@ -128,13 +128,13 @@ export default function DoctorRegister({ onSuccess, onLogin, onPatientRegister }
   }
 
   return (
-    <div style={{ 
+    <div className="doctor-register-page" style={{ 
       minHeight: 'calc(100vh - 80px)', 
       background: 'var(--gray-50)',
       padding: '2rem 1rem'
     }}>
       <div className="container" style={{ maxWidth: '700px' }}>
-        <McCard style={{ padding: '2.5rem' }}>
+        <McCard className="doctor-register-card" style={{ padding: '2.5rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <Badge variant="primary" icon={<UserDoctor size={14} />}>Doctor Portal</Badge>
             <h1 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Doctor Registration</h1>
@@ -164,7 +164,7 @@ export default function DoctorRegister({ onSuccess, onLogin, onPatientRegister }
             {/* Account Information */}
             <div style={{ marginBottom: '2rem' }}>
               <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Shield size={18} color="var(--mc-primary-500)" /> Account Information</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="doctor-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
                     Email *
@@ -247,8 +247,8 @@ export default function DoctorRegister({ onSuccess, onLogin, onPatientRegister }
             {/* Professional Information */}
             <div style={{ marginBottom: '2rem' }}>
               <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Stethoscope size={18} color="var(--mc-primary-500)" /> Professional Information</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div style={{ gridColumn: 'span 2' }}>
+              <div className="doctor-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="doctor-register-span-2" style={{ gridColumn: 'span 2' }}>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
                     Full Name *
                   </label>

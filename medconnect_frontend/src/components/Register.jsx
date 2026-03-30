@@ -75,14 +75,14 @@ export default function Register({ onRegister, onDoctorRegister, onLabProviderRe
   }
 
   return (
-    <div style={{
+    <div className="register-page" style={{
       minHeight: 'calc(100vh - 70px)',
       display: 'flex',
       position: 'relative',
       overflow: 'hidden'
     }}>
       {/* Left Side - Branding */}
-      <div style={{
+      <div className="register-brand-panel" style={{
         flex: 1,
         background: 'linear-gradient(135deg, #030712 0%, #111827 100%)',
         display: 'flex',
@@ -197,7 +197,7 @@ export default function Register({ onRegister, onDoctorRegister, onLabProviderRe
       </div>
 
       {/* Right Side - Register Form */}
-      <div style={{
+      <div className="register-form-panel" style={{
         flex: 1,
         display: 'flex',
         alignItems: 'center',
@@ -207,7 +207,7 @@ export default function Register({ onRegister, onDoctorRegister, onLabProviderRe
       }}>
         <div style={{ width: '100%', maxWidth: '480px' }}>
           {/* Step Indicator */}
-          <div style={{
+          <div className="register-stepper" style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -234,7 +234,7 @@ export default function Register({ onRegister, onDoctorRegister, onLabProviderRe
                 }}>
                   {step > s ? <CheckCircle size={18} /> : s}
                 </div>
-                <span style={{
+                <span className="register-step-label" style={{
                   fontSize: '0.95rem',
                   fontWeight: 600,
                   color: step >= s ? '#111827' : '#9CA3AF'
@@ -351,7 +351,7 @@ export default function Register({ onRegister, onDoctorRegister, onLabProviderRe
                   onChange={e => updateField('full_name', e.target.value)}
                 />
 
-                <div style={{
+                <div className="register-two-col-grid" style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr',
                   gap: '1rem'
@@ -414,7 +414,7 @@ export default function Register({ onRegister, onDoctorRegister, onLabProviderRe
                   </div>
                 </div>
 
-                <div style={{
+                <div className="register-action-row" style={{
                   display: 'flex',
                   gap: '1rem',
                   marginTop: '0.5rem'

@@ -72,4 +72,4 @@ class Consultation(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Consultation #{self.id} - {self.patient.email} with Dr. {self.doctor.email if self.doctor else 'Unassigned'}"
+        return f"Consultation #{self.id} - {self.patient.email} with {self.doctor.email if self.doctor else 'Unassigned'}"

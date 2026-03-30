@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:8000"
+import { API_BASE_URL } from "./config"
 
 // Helper to get auth headers
 function getAuthHeaders() {
@@ -40,6 +40,18 @@ async function refreshAccessToken() {
       if (data.refresh) localStorage.setItem("refresh", data.refresh)
       return data.access
     } catch {
+      const refresh = localStorage.getItem("refresh")
+
+      if (refresh) {
+        fetch(`${API_BASE_URL}/api/auth/logout/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh })
+        }).catch(() => {
+          // Best-effort server cleanup when refresh fails.
+        })
+      }
+
       // Refresh failed — clear auth
       localStorage.removeItem("access")
       localStorage.removeItem("refresh")
@@ -86,6 +98,15 @@ export const api = {
 
   async refreshToken(refreshToken) {
     const response = await fetch(`${API_BASE_URL}/api/auth/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh: refreshToken })
+    })
+    return handleResponse(response)
+  },
+
+  async logout(refreshToken) {
+    const response = await fetch(`${API_BASE_URL}/api/auth/logout/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh: refreshToken })
@@ -309,6 +330,14 @@ export const api = {
     return handleResponse(response)
   },
 
+  async sendDoctorHeartbeat() {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors/heartbeat/`, {
+      method: "POST",
+      headers: getAuthHeaders()
+    })
+    return handleResponse(response)
+  },
+
   // Doctor Registration
   async registerDoctor(data) {
     const response = await fetch(`${API_BASE_URL}/api/doctors/register/`, {
@@ -330,11 +359,10 @@ export const api = {
   },
 
   // Doctor Match (existing)
-  async getDoctorMatch(symptoms) {
-    const response = await authFetch(`${API_BASE_URL}/api/doctors-match/match/`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ symptoms })
+  async getDoctorMatch(consultationId) {
+    const response = await authFetch(`${API_BASE_URL}/api/doctors-match/match/${consultationId}/`, {
+      method: "GET",
+      headers: getAuthHeaders()
     })
     return handleResponse(response)
   },

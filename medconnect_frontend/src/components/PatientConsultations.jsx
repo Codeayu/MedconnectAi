@@ -30,7 +30,11 @@ export default function PatientConsultations({ onBack }) {
   const [selectedConsultation, setSelectedConsultation] = useState(null)
   const [reviewPrompt, setReviewPrompt] = useState({ open: false, consultation: null, rating: 5, comment: '' })
   const [reviewSubmitting, setReviewSubmitting] = useState(false)
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true)
+  const [soundEnabled, setSoundEnabled] = useState(true)
   const consultationsCacheRef = useRef({})
+  const lastStatusMapRef = useRef(new Map())
+  const statusWatcherInitializedRef = useRef(false)
   
   // Video call state
   const [showVideoCall, setShowVideoCall] = useState(false)
@@ -39,6 +43,114 @@ export default function PatientConsultations({ onBack }) {
   useEffect(() => {
     loadConsultations(activeTab)
   }, [activeTab])
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      return
+    }
+
+    if (Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {
+        // Ignore permission errors; in-app UI still updates.
+      })
+    }
+  }, [])
+
+  const playStatusAlertSound = () => {
+    if (!soundEnabled || typeof window === 'undefined') return
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext
+      if (!AudioCtx) return
+
+      const ctx = new AudioCtx()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+
+      osc.type = 'sine'
+      osc.frequency.setValueAtTime(740, ctx.currentTime)
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.03)
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3)
+
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start()
+      osc.stop(ctx.currentTime + 0.3)
+      osc.onended = () => ctx.close().catch(() => {})
+    } catch (err) {
+      console.error('Failed to play patient alert sound:', err)
+    }
+  }
+
+  const showPatientStatusNotification = (consultation, oldStatus) => {
+    if (!notificationsEnabled || typeof window === 'undefined' || !('Notification' in window)) return
+    if (Notification.permission !== 'granted') return
+
+    const doctorName = consultation?.doctor_name || 'your doctor'
+    const newStatusLabel = STATUS_COLORS[consultation?.status]?.label || consultation?.status
+    const oldStatusLabel = STATUS_COLORS[oldStatus]?.label || oldStatus || 'Updated'
+
+    try {
+      const notification = new Notification('Consultation Status Updated', {
+        body: `${doctorName}: ${oldStatusLabel} -> ${newStatusLabel}`,
+        tag: `consultation-status-${consultation.id}`,
+        renotify: true,
+      })
+
+      notification.onclick = () => {
+        window.focus()
+      }
+    } catch (err) {
+      console.error('Failed to show patient notification:', err)
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true
+
+    const checkStatusUpdates = async () => {
+      try {
+        const latest = await api.getPatientConsultations()
+        if (!isMounted) return
+
+        if (!statusWatcherInitializedRef.current) {
+          const initialMap = new Map(latest.map(c => [c.id, c.status]))
+          lastStatusMapRef.current = initialMap
+          statusWatcherInitializedRef.current = true
+          return
+        }
+
+        const previous = lastStatusMapRef.current
+        const currentMap = new Map()
+
+        for (const consultation of latest) {
+          currentMap.set(consultation.id, consultation.status)
+          const oldStatus = previous.get(consultation.id)
+          if (oldStatus && oldStatus !== consultation.status) {
+            playStatusAlertSound()
+            showPatientStatusNotification(consultation, oldStatus)
+          }
+        }
+
+        lastStatusMapRef.current = currentMap
+        consultationsCacheRef.current.all = latest
+        if (activeTab === 'all') {
+          setConsultations(latest)
+        }
+      } catch (err) {
+        console.error('Failed to poll consultation status updates:', err)
+      }
+    }
+
+    checkStatusUpdates()
+    const poller = setInterval(checkStatusUpdates, 20000)
+
+    return () => {
+      isMounted = false
+      clearInterval(poller)
+    }
+  }, [activeTab, notificationsEnabled, soundEnabled])
 
   const loadConsultations = async (tab = activeTab, forceRefresh = false) => {
     if (!forceRefresh && consultationsCacheRef.current[tab]) {
@@ -149,7 +261,7 @@ export default function PatientConsultations({ onBack }) {
   ]
 
   return (
-    <div style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
+    <div className="patient-consultations-page" style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header */}
       <section style={{
         background: 'linear-gradient(135deg, var(--mc-primary-500) 0%, var(--mc-secondary-500) 100%)',
@@ -172,10 +284,41 @@ export default function PatientConsultations({ onBack }) {
           <p style={{ opacity: 0.9, color: 'white' }}>
             View and manage your doctor appointments
           </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => setNotificationsEnabled(prev => !prev)}
+              style={{
+                padding: '0.55rem 0.95rem',
+                borderRadius: '20px',
+                border: '1px solid rgba(255,255,255,0.5)',
+                background: notificationsEnabled ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.25)',
+                color: 'white',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              {notificationsEnabled ? 'Patient Alerts On' : 'Patient Alerts Off'}
+            </button>
+
+            <button
+              onClick={() => setSoundEnabled(prev => !prev)}
+              style={{
+                padding: '0.55rem 0.95rem',
+                borderRadius: '20px',
+                border: '1px solid rgba(255,255,255,0.5)',
+                background: soundEnabled ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.25)',
+                color: 'white',
+                cursor: 'pointer',
+                fontWeight: '600'
+              }}
+            >
+              {soundEnabled ? 'Patient Sound On' : 'Patient Sound Off'}
+            </button>
+          </div>
         </div>
       </section>
 
-      <div className="container" style={{ padding: '2rem 1rem' }}>
+      <div className="container patient-consultations-content" style={{ padding: '2rem 1rem' }}>
         {/* Tabs */}
         <div style={{
           display: 'flex',
@@ -252,7 +395,7 @@ export default function PatientConsultations({ onBack }) {
               
               return (
                 <McCard key={consultation.id} style={{ padding: '1.5rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                  <div className="patient-consultation-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                     <div>
                       <h3 style={{ marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <UserDoctor size={18} /> {consultation.doctor_name || 'Unassigned'}
@@ -333,7 +476,7 @@ export default function PatientConsultations({ onBack }) {
                   )}
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <div className="patient-consultation-actions" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                     {/* Join Video Call for ONGOING video consultations */}
                     {consultation.status === 'ONGOING' && consultation.consultation_type === 'VIDEO' && (
                       <McButton 
@@ -399,6 +542,7 @@ export default function PatientConsultations({ onBack }) {
           onClick={() => setSelectedConsultation(null)}
         >
           <McCard 
+            className="patient-consultation-modal-card"
             style={{ 
               maxWidth: '600px', 
               width: '100%', 
@@ -425,7 +569,7 @@ export default function PatientConsultations({ onBack }) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="patient-consultation-modal-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Doctor</label>
                   <p style={{ fontWeight: 600 }}>{selectedConsultation.doctor_name}</p>
@@ -570,7 +714,7 @@ export default function PatientConsultations({ onBack }) {
               </label>
             </div>
 
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
+            <div className="patient-review-actions" style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', marginTop: '1.25rem' }}>
               <McButton
                 variant="outline"
                 onClick={() => setReviewPrompt({ open: false, consultation: null, rating: 5, comment: '' })}
