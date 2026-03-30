@@ -13,6 +13,13 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -24,12 +31,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-g0%y3b#*1+rr=dm!4*ljoyl(3pb31&i1enq(xtv#v47j&63%2a'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-g0%y3b#*1+rr=dm!4*ljoyl(3pb31&i1enq(xtv#v47j&63%2a')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_bool('DJANGO_DEBUG', True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h.strip() for h in os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',') if h.strip()]
 
 
 # Application definition
@@ -169,6 +176,17 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/min',
+        'user': '300/min',
+        'auth': '12/min',
+        'chat': '30/min',
+    },
 }
 
 SIMPLE_JWT = {
@@ -179,8 +197,8 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': False,
 }
 
-# CORS Configuration - Allow all origins in development
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS Configuration
+CORS_ALLOW_ALL_ORIGINS = env_bool('CORS_ALLOW_ALL_ORIGINS', DEBUG)
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
@@ -216,9 +234,9 @@ CORS_ALLOW_METHODS = [
 AUTH_USER_MODEL = "accounts.User"
 
 # Twilio Configuration for Video Calls
-TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', 'ACeb8844df63663674b82bbb9b6a653662')
-TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN', '8f47efa3e1167a67639968741626fe28')
-TWILIO_API_KEY_SID = os.getenv('TWILIO_API_KEY_SID', '')
-TWILIO_API_KEY_SECRET = os.getenv('TWILIO_API_KEY_SECRET', '')
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
+TWILIO_API_KEY_SID = os.getenv('TWILIO_API_KEY_SID')
+TWILIO_API_KEY_SECRET = os.getenv('TWILIO_API_KEY_SECRET')
 
 

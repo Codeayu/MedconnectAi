@@ -221,13 +221,13 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
   )
 
   return (
-    <div style={{ 
+    <div className="lab-provider-register-page" style={{ 
       minHeight: 'calc(100vh - 80px)', 
       background: 'var(--gray-50)',
       padding: '2rem 1rem'
     }}>
       <div className="container" style={{ maxWidth: '800px' }}>
-        <McCard style={{ padding: '2.5rem' }}>
+        <McCard className="lab-provider-register-card" style={{ padding: '2.5rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <Badge variant="accent" icon={<TestTube size={14} />}>Lab Provider Portal</Badge>
             <h1 style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>Lab Service Provider Registration</h1>
@@ -276,7 +276,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="Email Address *"
                     type="email"
@@ -297,7 +297,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="Password *"
                     type="password"
@@ -336,7 +336,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="Full Name *"
                     type="text"
@@ -418,7 +418,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   required
                 />
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="City *"
                     type="text"
@@ -448,7 +448,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="Lab Phone *"
                     type="tel"
@@ -504,7 +504,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="Opening Time"
                     type="time"
@@ -551,7 +551,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="lab-provider-register-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <McInput
                     label="License Number *"
                     type="text"
@@ -571,7 +571,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '2rem', marginTop: '0.5rem' }}>
+                <div className="lab-provider-register-check-row" style={{ display: 'flex', gap: '2rem', marginTop: '0.5rem' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                     <input
                       type="checkbox"
@@ -621,7 +621,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                <div className="lab-provider-register-home-row" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
                   <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
                     <input
                       type="checkbox"
@@ -650,7 +650,7 @@ export default function LabProviderRegister({ onSuccess, onLogin, onPatientRegis
             )}
 
             {/* Navigation Buttons */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem', gap: '1rem' }}>
+            <div className="lab-provider-register-nav" style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem', gap: '1rem' }}>
               {step > 1 ? (
                 <McButton type="button" variant="outline" onClick={handleBack}>
                   Back

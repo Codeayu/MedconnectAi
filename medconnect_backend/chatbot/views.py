@@ -1,7 +1,8 @@
-from rest_framework.decorators import api_view, permission_classes as perm_classes
+from rest_framework.decorators import api_view, permission_classes as perm_classes, throttle_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.throttling import UserRateThrottle
 import logging
 import traceback
 
@@ -21,8 +22,13 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+class ChatbotUserThrottle(UserRateThrottle):
+    scope = "chat"
+
+
 @api_view(["POST"])
 @perm_classes([IsAuthenticated])
+@throttle_classes([ChatbotUserThrottle])
 def medical_chatbot(request):
     """
     Main entry point for MedConnect multimodal chatbot
@@ -34,12 +40,12 @@ def medical_chatbot(request):
         extracted_text = ""
         input_sources = []
 
-        print(f"📥 Received chatbot request: text='{user_text[:100] if user_text else 'None'}...'")
+        logger.info("Received chatbot request")
 
         # ---------- MULTIMODAL INPUT HANDLING ----------
         if uploaded_file:
             file_type = uploaded_file.content_type
-            print(f"📎 File uploaded: {uploaded_file.name} ({file_type})")
+            logger.info("File uploaded: %s", uploaded_file.name)
 
             try:
                 if file_type.startswith("image/"):
@@ -60,7 +66,6 @@ def medical_chatbot(request):
                         status=status.HTTP_400_BAD_REQUEST
                     )
             except Exception as e:
-                print(f"⚠️ File processing error: {e}")
                 logger.error(f"File processing error: {e}")
 
         # ---------- COMBINE INPUT ----------
@@ -74,14 +79,13 @@ def medical_chatbot(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        print(f"📝 Processing query: {final_input_text[:150]}...")
         logger.info(f"Input Sources: {input_sources}")
         logger.info(f"Final Input Text: {final_input_text[:200]}")
 
         # ---------- ROUTING ----------
         context_data = route_request(final_input_text)
         route = context_data.get("route")
-        print(f"🔀 Route determined: {route}")
+        logger.info("Route determined: %s", route)
 
         # ---------- EMERGENCY SHORT-CIRCUIT ----------
         if route == "EMERGENCY":
@@ -100,12 +104,11 @@ def medical_chatbot(request):
             )
 
         # ---------- LLM GENERATION ----------
-        print("🤖 Generating LLM response...")
         raw_response = generate_response(
             user_query=final_input_text,
             context=context_data
         )
-        print(f"✅ LLM response generated ({len(raw_response)} chars)")
+        logger.info("LLM response generated")
 
         # ---------- SAFETY FILTER ----------
         safe_response = apply_safety_checks(
@@ -127,7 +130,6 @@ def medical_chatbot(request):
         )
 
     except Exception as e:
-        print(f"🔥 Chatbot Error: {type(e).__name__}: {e}")
         traceback.print_exc()
         logger.error(f"Chatbot error: {e}", exc_info=True)
         

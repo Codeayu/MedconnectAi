@@ -137,7 +137,7 @@ export default function McButton({
     <button
       type={type}
       style={baseStyle}
-      className={className}
+      className={`mc-btn ${className}`.trim()}
       disabled={disabled || loading}
       aria-disabled={disabled || loading}
       aria-label={ariaLabel}

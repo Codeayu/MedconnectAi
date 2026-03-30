@@ -4,6 +4,7 @@ from .views import (
     ApproveDoctorView,
     DoctorProfileView,
     DoctorOnlineStatusView,
+    DoctorHeartbeatView,
     DoctorListView,
     DoctorDetailView,
     DoctorDashboardView,
@@ -19,6 +20,7 @@ urlpatterns = [
     # Doctor's own profile
     path("profile/", DoctorProfileView.as_view()),
     path("online-status/", DoctorOnlineStatusView.as_view()),
+    path("heartbeat/", DoctorHeartbeatView.as_view()),
     path("dashboard/", DoctorDashboardView.as_view()),
     
     # Public doctor listing

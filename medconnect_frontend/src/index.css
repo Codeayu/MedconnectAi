@@ -1912,3 +1912,331 @@ input::placeholder, textarea::placeholder {
     border: 1px solid #ddd;
   }
 }
+
+/* Core page responsiveness (dashboard, consultations, auth, profile) */
+@media (max-width: 1024px) {
+  .register-page {
+    flex-direction: column;
+  }
+
+  .register-brand-panel,
+  .register-form-panel {
+    width: 100%;
+    padding: 2rem 1rem !important;
+  }
+
+  .register-brand-panel {
+    min-height: auto;
+  }
+
+  .doctor-dashboard-controls {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctor-dashboard-content,
+  .patient-consultations-content {
+    padding: 1.25rem 0.75rem !important;
+  }
+
+  .doctor-dashboard-header-row {
+    align-items: flex-start !important;
+  }
+
+  .doctor-dashboard-profile {
+    width: 100%;
+  }
+
+  .doctor-dashboard-profile h1 {
+    font-size: 1.35rem !important;
+    line-height: 1.3;
+  }
+
+  .doctor-dashboard-controls button,
+  .doctor-dashboard-controls .mc-btn,
+  .patient-consultation-actions .mc-btn,
+  .doctor-consultation-actions .mc-btn,
+  .patient-review-actions .mc-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .doctor-consultation-row,
+  .patient-consultation-card-header {
+    flex-direction: column;
+    gap: 0.75rem !important;
+  }
+
+  .doctor-consultation-patient,
+  .doctor-consultation-schedule {
+    width: 100%;
+    min-width: 0 !important;
+  }
+
+  .doctor-consultation-schedule {
+    text-align: left !important;
+  }
+
+  .doctor-consultation-schedule > div > div {
+    justify-content: flex-start !important;
+  }
+
+  .doctor-consultation-actions,
+  .patient-consultation-actions,
+  .patient-review-actions,
+  .register-action-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .doctor-consultation-modal-card,
+  .patient-consultation-modal-card {
+    padding: 1rem !important;
+    max-height: 92vh !important;
+  }
+
+  .doctor-consultation-modal-grid,
+  .patient-consultation-modal-grid,
+  .register-two-col-grid,
+  .doctor-register-grid-2,
+  .profile-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .doctor-register-span-2 {
+    grid-column: auto !important;
+  }
+
+  .doctor-register-card {
+    padding: 1.25rem !important;
+  }
+
+  .profile-page {
+    padding: 1rem 0 !important;
+  }
+
+  .profile-header-row {
+    flex-direction: column;
+    text-align: center;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+
+  .register-stepper {
+    gap: 0.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .register-step-label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-brand-panel {
+    display: none !important;
+  }
+
+  .register-form-panel {
+    padding: 1rem 0.75rem !important;
+  }
+
+  .doctor-dashboard-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .doctor-dashboard-page h2,
+  .patient-consultations-page h1 {
+    font-size: 1.35rem !important;
+  }
+
+  .doctor-consultation-modal-card h2,
+  .patient-consultation-modal-card h2 {
+    font-size: 1.1rem !important;
+  }
+}
+
+/* Extended responsive coverage for remaining pages */
+@media (max-width: 768px) {
+  .lab-provider-dashboard-page,
+  .lab-provider-register-page {
+    padding: 1rem 0.75rem !important;
+  }
+
+  .lab-provider-header-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+  }
+
+  .lab-provider-tabs {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .lab-provider-grid-2,
+  .lab-provider-register-grid-2,
+  .lab-provider-register-grid-3,
+  .lab-booking-grid-2,
+  .doctor-list-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lab-provider-modal-card,
+  .lab-provider-register-card {
+    padding: 1rem !important;
+  }
+
+  .lab-provider-modal-actions,
+  .lab-provider-register-nav,
+  .lab-provider-register-check-row,
+  .lab-provider-register-home-row {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .lab-provider-modal-actions .mc-btn,
+  .lab-provider-register-nav .mc-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .lab-test-booking-content {
+    padding: 1.25rem 0.75rem !important;
+  }
+
+  .lab-booking-collection-types,
+  .doctor-list-consultation-types,
+  .doctor-list-booking-form .mc-btn {
+    flex-direction: column;
+  }
+
+  .doctor-list-consultation-types button {
+    min-width: 0 !important;
+    width: 100%;
+  }
+
+  .lab-test-booking-search-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .lab-test-booking-search {
+    min-width: 0 !important;
+    width: 100%;
+  }
+}
+
+/* Navbar mobile layout */
+@media (max-width: 1024px) {
+  .mc-navbar-inner {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .mc-navbar-center {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    justify-content: flex-start;
+  }
+
+  .mc-navbar-right {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .mc-navbar {
+    padding: 0.55rem 0 !important;
+  }
+
+  .mc-navbar-logo h3 {
+    font-size: 1.05rem !important;
+  }
+
+  .mc-navbar-logo p {
+    display: none;
+  }
+
+  .mc-navbar-right {
+    gap: 0.4rem !important;
+  }
+
+  .mc-navbar-notification {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .mc-navbar-profile-trigger {
+    padding-right: 10px !important;
+    gap: 8px !important;
+  }
+
+  .mc-navbar-profile-trigger > div:nth-child(2) {
+    display: none;
+  }
+}
+
+/* Wellness hub mobile */
+@media (max-width: 768px) {
+  .wellness-hub-hero {
+    padding: 2rem 0 2.5rem !important;
+  }
+
+  .wellness-hub-hero-content h1 {
+    font-size: 1.9rem !important;
+  }
+
+  .wellness-hub-hero-content p {
+    font-size: 0.98rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .wellness-hub-services-section,
+  .wellness-hub-stats-section,
+  .wellness-hub-cta-section {
+    padding-top: 1.5rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .wellness-hub-services-grid,
+  .wellness-hub-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+
+  .wellness-hub-page .mc-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .wellness-hub-cta-title {
+    font-size: 1.45rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .lab-provider-dashboard-page h1,
+  .lab-test-booking-page h1 {
+    font-size: 1.4rem !important;
+    line-height: 1.3;
+  }
+
+  .lab-provider-tabs button {
+    padding: 0.65rem 0.85rem !important;
+    font-size: 0.85rem;
+  }
+
+  .lab-provider-overview .card,
+  .lab-provider-dashboard-page .card,
+  .lab-test-booking-page .card {
+    padding: 1rem !important;
+  }
+}

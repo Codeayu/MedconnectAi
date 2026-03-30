@@ -183,7 +183,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
   }
 
   const renderOverview = () => (
-    <div style={{ display: 'grid', gap: '1.5rem' }}>
+    <div className="lab-provider-overview" style={{ display: 'grid', gap: '1.5rem' }}>
       {/* Stats Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         <McCard style={{ padding: '1.5rem', textAlign: 'center' }}>
@@ -212,7 +212,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
       </div>
 
       {/* Revenue & Tests */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="lab-provider-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <McCard style={{ padding: '1.5rem' }}>
           <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Activity size={20} /> Revenue Stats
@@ -227,7 +227,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
           <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <TestTube size={20} /> Tests & Reviews
           </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="lab-provider-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <div style={{ fontSize: '2rem', fontWeight: 700 }}>{dashboardData?.total_tests_offered || 0}</div>
               <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Tests Offered</p>
@@ -248,7 +248,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
           <h4 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Building size={20} /> Lab Information
           </h4>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+          <div className="lab-provider-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
             <div>
               <h5 style={{ margin: '0 0 0.5rem', color: 'var(--text-secondary)' }}>Lab Name</h5>
               <p style={{ margin: 0, fontWeight: 500 }}>{profile.lab.name}</p>
@@ -522,7 +522,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <McCard style={{ width: '100%', maxWidth: 500, padding: '2rem' }}>
+          <McCard className="lab-provider-modal-card" style={{ width: '100%', maxWidth: 500, padding: '2rem' }}>
             <h3 style={{ marginTop: 0 }}>Add Test Offering</h3>
             <form onSubmit={handleAddTestOffering}>
               <div style={{ marginBottom: '1rem' }}>
@@ -547,7 +547,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
                 </select>
               </div>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+              <div className="lab-provider-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Price (₹) *</label>
                   <input
@@ -598,7 +598,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <div className="lab-provider-modal-actions" style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
                 <McButton type="button" variant="outline" onClick={() => setShowAddTestModal(false)}>
                   Cancel
                 </McButton>
@@ -702,7 +702,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
   )
 
   return (
-    <div style={{ 
+    <div className="lab-provider-dashboard-page" style={{ 
       minHeight: 'calc(100vh - 80px)', 
       background: 'var(--gray-50)',
       padding: '2rem 1rem'
@@ -710,7 +710,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
       <div className="container" style={{ maxWidth: '1200px' }}>
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <div className="lab-provider-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <div>
               <h1 style={{ margin: '0 0 0.5rem' }}>Lab Provider Dashboard</h1>
               <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
@@ -726,7 +726,7 @@ export default function LabProviderDashboard({ onNavigate, onLogout }) {
         </div>
 
         {/* Tabs */}
-        <div style={{ 
+        <div className="lab-provider-tabs" style={{ 
           display: 'flex', 
           gap: '0.5rem', 
           marginBottom: '1.5rem',

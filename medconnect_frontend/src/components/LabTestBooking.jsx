@@ -842,7 +842,7 @@ export default function LabTestBooking({ onBack, onNavigate }) {
             <Home size={20} /> Collection Type
           </h3>
           
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div className="lab-booking-collection-types" style={{ display: 'flex', gap: '1rem' }}>
             <div
               onClick={() => setBookingForm({ ...bookingForm, collection_type: 'HOME' })}
               style={{
@@ -884,7 +884,7 @@ export default function LabTestBooking({ onBack, onNavigate }) {
             <Calendar size={20} /> Schedule
           </h3>
           
-          <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+          <div className="lab-booking-grid-2" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#374151' }}>Date *</label>
               <input
@@ -947,7 +947,7 @@ export default function LabTestBooking({ onBack, onNavigate }) {
                   }}
                 />
               </div>
-              <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+              <div className="lab-booking-grid-2" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#374151' }}>City *</label>
                   <input
@@ -1009,8 +1009,8 @@ export default function LabTestBooking({ onBack, onNavigate }) {
             <User size={20} /> Patient Details
           </h3>
           
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+            <div style={{ display: 'grid', gap: '1rem' }}>
+            <div className="lab-booking-grid-2" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#374151' }}>Full Name *</label>
                 <input
@@ -1046,7 +1046,7 @@ export default function LabTestBooking({ onBack, onNavigate }) {
                 />
               </div>
             </div>
-            <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
+            <div className="lab-booking-grid-2" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: '1fr 1fr' }}>
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#374151' }}>Age *</label>
                 <input
@@ -1147,7 +1147,7 @@ export default function LabTestBooking({ onBack, onNavigate }) {
 
   // Main render
   return (
-    <div style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
+    <div className="lab-test-booking-page" style={{ background: 'var(--gray-50)', minHeight: 'calc(100vh - 80px)' }}>
       {/* Header */}
       <section style={{
         background: 'linear-gradient(135deg, #2563EB 0%, #7C3AED 100%)',
@@ -1173,7 +1173,7 @@ export default function LabTestBooking({ onBack, onNavigate }) {
         </div>
       </section>
 
-      <div className="container" style={{ padding: '2rem 1rem' }}>
+      <div className="container lab-test-booking-content" style={{ padding: '2rem 1rem' }}>
         {/* Navigation Tabs */}
         {activeView !== 'booking-form' && activeView !== 'lab-tests' && (
           <div style={{
@@ -1216,14 +1216,14 @@ export default function LabTestBooking({ onBack, onNavigate }) {
         {/* Search and Filters */}
         {(activeView === 'labs' || activeView === 'tests' || activeView === 'packages') && (
           <div style={{ marginBottom: '2rem' }}>
-            <div style={{
+            <div className="lab-test-booking-search-row" style={{
               display: 'flex',
               gap: '1rem',
               alignItems: 'center',
               marginBottom: '1rem',
               flexWrap: 'wrap'
             }}>
-              <div style={{
+              <div className="lab-test-booking-search" style={{
                 flex: 1,
                 minWidth: '250px',
                 position: 'relative'

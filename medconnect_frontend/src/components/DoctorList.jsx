@@ -644,13 +644,13 @@ export default function DoctorList({ onBack, onBook }) {
             )}
 
             {/* Booking Form */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="doctor-list-booking-form" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {/* Consultation Type */}
               <div>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
                   Consultation Type
                 </label>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                <div className="doctor-list-consultation-types" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                   {[
                     { value: 'VIDEO', label: 'Video Call', IconComp: Video },
                     { value: 'AUDIO', label: 'Audio Call', IconComp: Phone },
@@ -688,7 +688,7 @@ export default function DoctorList({ onBack, onBook }) {
               </div>
 
               {/* Date & Time */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="doctor-list-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <div>
                   <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
                     <Calendar size={14} /> Date *
