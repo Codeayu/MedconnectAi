@@ -21,7 +21,7 @@ export default function Login({ onLogin, onRegister, onDoctorRegister, onLabProv
     setError("")
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/auth/login/", {
+      const res = await fetch("http://104.208.88.185:8000/api/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })

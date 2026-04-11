@@ -1,5 +1,5 @@
 // API Service for MedConnect AI - Updated March 2026
-const API_BASE = 'http://127.0.0.1:8000/api'
+const API_BASE = 'http://104.208.88.185:8000/api'
 
 function getAuthHeaders() {
   const token = localStorage.getItem("access")
