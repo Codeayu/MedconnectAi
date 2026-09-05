@@ -1,5 +1,6 @@
 # MedconnectAi backend dependencies
-# Generated from imports and validated against installed packages.
+# Direct dependencies only, pinned to the versions installed in the project env.
+# The full pinned tree (including transitive packages) lives in requirements-freeze.txt.
 
 # Core Django
 Django==5.2.10
@@ -39,6 +40,13 @@ PyMuPDF==1.26.7
 pinecone==8.0.0
 sentence-transformers==5.2.0
 scikit-learn==1.8.0
+# joblib loads symptom_prediction/model/xgb_model.joblib, which needs xgboost
+# installed to reconstruct the estimator.
+joblib==1.5.3
+xgboost==3.1.3
+
+# AI / LLM
+google-genai==1.59.0
 
 # Testing & Development
 Faker==40.13.0

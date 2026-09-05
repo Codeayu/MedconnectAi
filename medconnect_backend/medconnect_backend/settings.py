@@ -20,6 +20,11 @@ def env_bool(name, default=False):
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
+
+def env_list(name, default=""):
+    value = os.getenv(name, default)
+    return [item.strip() for item in value.split(',') if item.strip()]
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -181,6 +186,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -218,21 +224,21 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = env_bool('CORS_ALLOW_ALL_ORIGINS', DEBUG)
 CORS_ALLOW_CREDENTIALS = True
 
-# Production CORS origins (from environment or defaults)
-if os.getenv("CORS_ORIGINS"):
-    CORS_ALLOWED_ORIGINS = [
-        origin.strip() for origin in os.getenv("CORS_ORIGINS", "").split(",")
-        if origin.strip()
-    ]
-else:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:5175",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:5174",
-        "http://127.0.0.1:5175",
-    ]
+# Production CORS origins. CORS_ALLOWED_ORIGINS is the canonical name;
+# CORS_ORIGINS is accepted as an alias (documented in .env.example).
+_DEFAULT_CORS_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:5175',
+]
+CORS_ALLOWED_ORIGINS = (
+    env_list('CORS_ALLOWED_ORIGINS')
+    or env_list('CORS_ORIGINS')
+    or _DEFAULT_CORS_ORIGINS
+)
 
 CORS_ALLOW_HEADERS = [
     'accept',
