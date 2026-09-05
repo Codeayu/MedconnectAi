@@ -15,11 +15,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
-from accounts import urls as accounts_urls
+from django.urls import path, include
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+# Health check endpoint (no database required)
+@require_http_methods(["GET", "HEAD"])
+def health_check(request):
+    """Health check endpoint for load balancers and monitoring"""
+    return JsonResponse({"status": "healthy", "service": "medconnectai-backend"})
 
 
 urlpatterns = [
+    # Health check (must be first, fast, no DB dependency)
+    path("health/", health_check, name="health"),
+    path("health", health_check, name="health-no-slash"),
+    
     path('admin/', admin.site.urls),
     path('api/doctors-match/', include('doctor_matching.urls')),
     path('api/symptoms/', include('symptom_prediction.urls')),
