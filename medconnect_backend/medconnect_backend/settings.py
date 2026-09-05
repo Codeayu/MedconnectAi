@@ -99,23 +99,40 @@ WSGI_APPLICATION = 'medconnect_backend.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "mssql",
-        "NAME": os.getenv("DB_Name"),
-        "USER": os.getenv("DB_User"),
-        "PASSWORD": os.getenv("DB_Password"),
-        "HOST": os.getenv("DB_Host"),
-        "PORT": os.getenv("DB_Port"),
-        "OPTIONS": {
-            "driver": "ODBC Driver 18 for SQL Server",
-            "extra_params": (
-                "Encrypt=yes;"
-                "TrustServerCertificate=no;"
-                "Connection Timeout=60;"
-                "MARS_Connection=yes;"
-            )
-        }
+        # Support for both PostgreSQL (production) and MSSQL (legacy)
+        "ENGINE": "django.db.backends.postgresql" if os.getenv("DATABASE_URL") else "mssql",
+        
+        # PostgreSQL configuration (takes precedence if DATABASE_URL is set)
+        **({"NAME": "medconnectai"} if not os.getenv("DATABASE_URL") else {}),
+        
+        # MSSQL configuration (fallback if DATABASE_URL not set)
+        **({"NAME": os.getenv("DB_Name"),
+            "USER": os.getenv("DB_User"),
+            "PASSWORD": os.getenv("DB_Password"),
+            "HOST": os.getenv("DB_Host"),
+            "PORT": os.getenv("DB_Port"),
+            "OPTIONS": {
+                "driver": "ODBC Driver 18 for SQL Server",
+                "extra_params": (
+                    "Encrypt=yes;"
+                    "TrustServerCertificate=no;"
+                    "Connection Timeout=60;"
+                    "MARS_Connection=yes;"
+                )
+            }
+           } if not os.getenv("DATABASE_URL") else {}),
     }
 }
+
+# Use DATABASE_URL if provided (for Docker/production)
+if os.getenv("DATABASE_URL"):
+    import dj_database_url
+    DATABASES["default"] = dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,  # Connection pooling timeout in seconds
+        conn_health_checks=True,
+    )
+    DATABASES["default"]["CONN_MAX_AGE"] = 600
 
 # SQLite for local development (uncomment if needed)
 # DATABASES = {
@@ -201,14 +218,21 @@ SIMPLE_JWT = {
 CORS_ALLOW_ALL_ORIGINS = env_bool('CORS_ALLOW_ALL_ORIGINS', DEBUG)
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174",
-    "http://127.0.0.1:5175",
-]
+# Production CORS origins (from environment or defaults)
+if os.getenv("CORS_ORIGINS"):
+    CORS_ALLOWED_ORIGINS = [
+        origin.strip() for origin in os.getenv("CORS_ORIGINS", "").split(",")
+        if origin.strip()
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+        "http://127.0.0.1:5175",
+    ]
 
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -239,4 +263,89 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_API_KEY_SID = os.getenv('TWILIO_API_KEY_SID')
 TWILIO_API_KEY_SECRET = os.getenv('TWILIO_API_KEY_SECRET')
 
+# ===== PRODUCTION SECURITY SETTINGS =====
+
+# Security headers
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_HTTPONLY = not DEBUG
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
+
+# Static files configuration for production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'medconnectai.log'),
+            'maxBytes': 1024 * 1024 * 10,  # 10MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'] if not DEBUG else ['console'],
+            'level': os.getenv('LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+        'medconnect': {
+            'handlers': ['console', 'file'] if not DEBUG else ['console'],
+            'level': os.getenv('LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
+
+# Sentry configuration (error tracking)
+if os.getenv('SENTRY_DSN'):
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+    
+    sentry_sdk.init(
+        dsn=os.getenv('SENTRY_DSN'),
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=0.1,
+        send_default_pii=False,
+        environment='production' if not DEBUG else 'development',
+    )
+
+# Create logs directory if it doesn't exist
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOGS_DIR, exist_ok=True)
 
