@@ -1,0 +1,50 @@
+# MedconnectAi backend dependencies
+# Generated from imports and validated against installed packages.
+
+# Core Django
+Django==5.2.10
+djangorestframework==3.16.1
+djangorestframework-simplejwt==5.5.1
+django-cors-headers==4.9.0
+
+# Database
+psycopg2-binary==2.9.9
+dj-database-url==2.1.0
+mssql-django==1.6
+pyodbc==5.3.0
+
+# Production Server
+gunicorn==22.0.0
+whitenoise==6.6.0
+
+# Environment & Configuration
+python-dotenv==1.2.1
+
+# HTTP & Communication
+requests==2.32.5
+twilio==9.9.1
+
+# Audio & Speech Processing
+faster-whisper==1.2.1
+pydub==0.25.1
+pytesseract==0.3.13
+
+# Computer Vision
+opencv-python==4.13.0.90
+Pillow==12.1.0
+
+# Data Science & ML
+numpy==2.4.1
+PyMuPDF==1.26.7
+pinecone==8.0.0
+sentence-transformers==5.2.0
+scikit-learn==1.8.0
+
+# Testing & Development
+Faker==40.13.0
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+
+# Monitoring & Logging
+sentry-sdk==1.39.1
