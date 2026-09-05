@@ -89,10 +89,14 @@ Notes:
   exists on disk but the SQLite config is commented out — don't assume SQLite works.
 - Env keys are listed in `.env.example`. `GEMINI_API_KEY` is **missing from it**
   but required by `chatbot/generator.py` (§18.2).
-- `google-genai`, `xgboost` and `joblib` are imported by code but **absent from
-  `requirements.txt`** (§18.1) — chat and symptom prediction fail in a clean install.
+- `requirements.txt` is the curated **direct**-dependency list; `requirements-freeze.txt`
+  holds the full pinned tree. Add new direct dependencies to both.
+- **CORS origins** are read from `CORS_ALLOWED_ORIGINS`, falling back to the legacy
+  `CORS_ORIGINS` alias, then to the localhost defaults.
 - Tests: only `lab_tests/tests.py` has real content and there is no pytest config, so
   `pytest` will not do what you expect yet (§18.7).
+- `npm run lint` currently reports **38 errors / 7 warnings** that predate this branch. Don't
+  treat a clean run as the bar; check you added no *new* ones.
 
 ## Architecture
 
@@ -205,16 +209,20 @@ explicitly when something we build is dev-only**.
 Each one verified in the code — see §18 for the full list with effects.
 
 1. **Two competing API clients.** `src/api.js` is env-driven and has a single-flight refresh
-   interceptor; `src/api/index.js` hardcodes `http://127.0.0.1:8000/api`. Check which one a
-   component imports before debugging a failing call. Converge on the env-driven one.
+   interceptor; `src/api/index.js` hardcodes `http://104.208.88.185:8000/api` — a **public
+   production host**. Worse, `src/config.js` defaults to that same IP when
+   `VITE_API_BASE_URL` is unset, so running the frontend locally without a `.env` sends real
+   traffic to production. Always set `VITE_API_BASE_URL` locally. Check which client a
+   component imports before debugging a failing call, and converge on the env-driven one
+   (§18.3).
 2. **Two competing component libraries** — `src/components/ui/*` and
    `src/components/ui-next/Mc*`. Find out which the screen actually renders before editing.
 3. **No client-side routing.** `react-router-dom` is installed but unused; `App.jsx`
    navigates with `useState("landing")` + `setPage()`. There are no URLs, so deep links and
    notification deep-linking are impossible today. Adding a route means touching `App.jsx`.
-4. **Missing dependencies** (§18.1) and **missing `GEMINI_API_KEY` in `.env.example`**
-   (§18.2). AI features fail silently on a fresh environment — `model_loader.py` returns
-   `None` on load failure rather than raising.
+4. **`GEMINI_API_KEY` is missing from `.env.example`** (§18.2). AI features fail silently on a
+   fresh environment — `model_loader.py` prints a warning and returns `None` on load failure
+   rather than raising, so a broken model looks like an empty result.
 5. **`Consultation.diagnosis` / `.prescription` / `.notes` are free-text `TextField`s.** There
    is no structured prescription here. The real model lives in the separate E-Prescription
    repo.
@@ -239,7 +247,7 @@ Per §19. Do the earlier band before the later one — later work depends on it.
 
 | Band | Work |
 |---|---|
-| **Stabilise (now)** | Fix gaps §18.1–3; add `/api/v1/`; real routing with URLs; one component library, one API client; pytest config + tests on auth and booking |
+| **Stabilise (now)** | Fix gaps §18.2–3 (3 first — local dev currently hits production); add `/api/v1/`; real routing with URLs; one component library, one API client; pytest config + tests on auth and booking |
 | **Complete the spine** | Patient record fields; structured prescription from `e_prescription`; audit log; notification model + in-app centre; medical wallet storage |
 | **Make it trustworthy** | Doctor verification end to end; admin portal essentials; source labelling everywhere; full state coverage |
 | **Make it understandable** | i18n (English/Hindi/Marathi); health-literacy mode; Health Education Hub; OCR + report explanation with human verification |

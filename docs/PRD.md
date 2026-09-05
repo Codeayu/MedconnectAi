@@ -471,13 +471,14 @@ Production requirements — flag explicitly whenever something built is dev-only
 
 ## §18 Known gaps and risks
 
-**Verified** by reading the code on 30 Aug 2026. Numbered so they can be cited in issues.
+**Verified** by reading the code on 30 Aug 2026; gaps 1 and 3 re-verified after merging
+`origin/main` on 5 Sep 2026. Numbered so they can be cited in issues.
 
 | # | Gap | Effect |
 |---|---|---|
-| 1 | `google-genai`, `xgboost`, `joblib` are imported but absent from `requirements.txt` and `requirements-freeze.txt` | the Docker image cannot run chat or symptom prediction |
+| 1 | ~~`google-genai`, `xgboost`, `joblib` missing from requirements~~ — **closed 5 Sep 2026**: all three are now pinned in `requirements.txt` | — |
 | 2 | `GEMINI_API_KEY` missing from `.env.example` although `chatbot/generator.py` requires it | silent AI failure on a fresh setup |
-| 3 | Two frontend API layers: `src/api.js` (env-driven, with refresh interceptor) vs `src/api/index.js` (**hardcoded** `http://127.0.0.1:8000/api`) | breaks in any non-local environment |
+| 3 | Two frontend API layers: `src/api.js` (env-driven, with refresh interceptor) vs `src/api/index.js` (**hardcodes** `http://104.208.88.185:8000/api`). `src/config.js` also **defaults** to that same public IP when `VITE_API_BASE_URL` is unset | a developer running locally silently sends real requests — and any PHI in them — to the production server; environment separation is not enforced anywhere in the client |
 | 4 | Two component libraries: `src/components/ui/*` vs `src/components/ui-next/Mc*` | inconsistent UI, doubled maintenance |
 | 5 | `react-router-dom` installed but unused; `App.jsx` switches pages with `useState` | no URLs, no deep links → notification deep-linking (§7.6) is impossible |
 | 6 | No API versioning (§12) | blocks E-Prescription integration and any external consumer |
@@ -488,8 +489,9 @@ Production requirements — flag explicitly whenever something built is dev-only
 | 11 | `PatientProfile` lacks allergies / conditions / history | any "safety check" feature would be unsafe to claim |
 | 12 | JWT in `localStorage`, 24 h access token | XSS exposure; long-lived credential |
 
-Highest-value fixes first: **1, 2, 3, 6, 7** — they are cheap and they unblock or de-risk
-everything after them.
+Highest-value fixes first: **3, 2, 6, 7** — they are cheap and they unblock or de-risk
+everything after them. **3 is now the most urgent**: it is a data-protection issue, not just
+a configuration smell (§10.2, §17).
 
 ---
 
@@ -498,8 +500,9 @@ everything after them.
 Sequenced so each step is usable and the next one depends on it.
 
 **Stabilise (now)**
-Fix gaps 1–3; add `/api/v1/`; introduce react-router with real URLs; pick one component
-library and one API client; add pytest config and tests around auth and booking.
+Fix gaps 2 and 3 (3 first — it leaks local traffic to production); add `/api/v1/`; introduce
+react-router with real URLs; pick one component library and one API client; add pytest config
+and tests around auth and booking.
 
 **Complete the spine**
 Patient record fields (§11); structured prescription brought in from the `e_prescription`
